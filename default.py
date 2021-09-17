@@ -20,7 +20,7 @@ from ael.utils import kodilogging, io, kodi
 from ael.scrapers import ScraperSettings, ScrapeStrategy
 
 # Local modules
-from resources.lib.scraper import MobyGames, TheGamesDB
+from resources.lib.scraper import MobyGames
 
 kodilogging.config() 
 logger = logging.getLogger(__name__)
