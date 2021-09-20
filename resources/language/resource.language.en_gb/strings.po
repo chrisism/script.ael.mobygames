@@ -1,6 +1,6 @@
 # Kodi Media Center language file
 # Addon Name: MobyGames scraper for AEL
-# Addon id: metadata.ael.mobygames
+# Addon id: script.ael.mobygames
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"

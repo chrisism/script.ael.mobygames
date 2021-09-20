@@ -245,7 +245,7 @@ class MobyGames(Scraper):
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, scraper_platform, status_dic):
         # --- Retrieve JSON data with list of games ---
-        search_string_encoded = quote_plus(search_term.encode('utf8'))
+        search_string_encoded = quote_plus(search_term)
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(
