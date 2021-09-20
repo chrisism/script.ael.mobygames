@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" ?>
 <settings version="1">
-    <section id="metadata.ael.mobygames">
+    <section id="script.ael.mobygames">
         <category id="ael_tgdb_general" label="30010" help="">
 			<group id="1">
                 <setting id="scraper_mobygames_apikey" type="string" label="30101" help="">
