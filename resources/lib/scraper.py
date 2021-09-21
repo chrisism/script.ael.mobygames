@@ -86,7 +86,6 @@ class MobyGames(Scraper):
         self.all_asset_cache = {}
 
         cache_dir = settings.getSetting('scraper_cache_dir')
-        # --- Pass down common scraper settings ---
         super(MobyGames, self).__init__(cache_dir)
 
     # --- Base class abstract methods ------------------------------------------------------------
