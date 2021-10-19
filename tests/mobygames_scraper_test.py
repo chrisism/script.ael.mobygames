@@ -67,9 +67,12 @@ class Test_mobygames_scraper(unittest.TestCase):
         print('---------------------------------------------------------------------------')
 
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     @patch('ael.api.client_get_rom')
-    def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, mock_get):        
+    def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get):        
         # arrange
+        settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
+        
         settings = ScraperSettings()
         settings.scrape_metadata_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
         settings.scrape_assets_policy = constants.SCRAPE_ACTION_NONE
@@ -93,11 +96,15 @@ class Test_mobygames_scraper(unittest.TestCase):
         print(actual.get_data_dic())
                 
     # add actual mobygames apikey above and comment out patch attributes to do live tests
-    @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_gamesfaq)
+    @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.net.download_img')
+    @patch('resources.lib.scraper.io.FileName.scanFilesInPath', autospec=True)
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     @patch('ael.api.client_get_rom')
-    def test_scraping_assets_for_game(self, api_rom_mock: MagicMock, mock_imgs, mock_get):
+    def test_scraping_assets_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, mock_imgs, mock_get):
         # arrange
+        settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
+        
         settings = ScraperSettings()
         settings.scrape_metadata_policy = constants.SCRAPE_ACTION_NONE
         settings.scrape_assets_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
@@ -107,7 +114,13 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom = ROMObj({
             'id': rom_id,
             'filename': Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip',
-            'platform': 'Nintendo NES'
+            'platform': 'Nintendo NES',
+            'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
+            'asset_paths': {
+                constants.ASSET_BOXFRONT_ID: '/fronts/',
+                constants.ASSET_BOXBACK_ID: '/backs/',
+                constants.ASSET_SNAP_ID: '/snaps/'
+            }
         })
         api_rom_mock.return_value = rom
         
@@ -117,12 +130,9 @@ class Test_mobygames_scraper(unittest.TestCase):
         actual = target.process_single_rom(rom_id)
 
         # assert
-        self.assertTrue(actual)     
+        self.assertTrue(actual) 
+        logger.info(actual.get_data_dic()) 
         
-        actual_data = actual.get_data_dic()
-        actual_assets = actual_data['assets']
-                
-        self.assertTrue(actual_assets)     
-        #self.assertEqual(100, len(actual_assets))
-        for actual_key, actual_value in actual_assets.items():
-            logger.info('{} = {}'.format(actual_key, actual_value))
+        self.assertTrue(actual.entity_data['assets'][constants.ASSET_BOXFRONT_ID], 'No boxfront defined')
+        self.assertTrue(actual.entity_data['assets'][constants.ASSET_BOXBACK_ID], 'No boxback defined')
+        self.assertTrue(actual.entity_data['assets'][constants.ASSET_SNAP_ID], 'No snap defined')      

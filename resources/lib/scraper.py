@@ -262,7 +262,7 @@ class MobyGames(Scraper):
         candidate_list = []
         for item in games_json:
             title = item['title']
-            scraped_ael_platform = convert_MobyGames_platform_to_AEL_platform(item['platform'])
+            scraped_ael_platform = convert_MobyGames_platform_to_AEL_platform(scraper_platform) #item['platform'])
 
             candidate = self._new_candidate_dic()
             candidate['id'] = item['game_id']
@@ -499,7 +499,7 @@ def convert_AEL_platform_to_MobyGames(platform_long_name) -> int:
     # Platform not found.
     return DEFAULT_PLAT_MOBYGAMES
 
-def convert_MobyGames_platform_to_AEL_platform(self, moby_platform):
+def convert_MobyGames_platform_to_AEL_platform(moby_platform) -> platforms.Platform:
     if moby_platform in MobyGames_AEL_compact_platform_mapping:
         platform_compact_name = MobyGames_AEL_compact_platform_mapping[moby_platform]
         return platforms.get_AEL_platform_by_compact(platform_compact_name)
