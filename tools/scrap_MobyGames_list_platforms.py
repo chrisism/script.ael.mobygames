@@ -6,32 +6,30 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import os
-import pprint
-import sys
+import os, sys
 
-# --- AEL modules ---
-if __name__ == "__main__" and __package__ is None:
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    print('Adding to sys.path {0}'.format(path))
-    sys.path.append(path)
-    
-from resources.lib.scraper import *
-from resources.utils import *
-import common
+import pprint
+import logging
+
+logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
+                datefmt = '%m/%d/%Y %I:%M:%S %p', level = logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+from resources.lib.scraper import MobyGames
+from ael.utils import kodi, text
+from ael import constants
 
 # --- configuration ------------------------------------------------------------------------------
 txt_fname = 'data/MobyGames_platforms.txt'
 csv_fname = 'data/MobyGames_platforms.csv'
 
 # --- main ---------------------------------------------------------------------------------------
-set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-scraper_obj = MobyGames(common.settings)
+scraper_obj = MobyGames()
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
-status_dic = kodi_new_status_dic('Scraper test was OK')
+status_dic = kodi.new_status_dic('Scraper test was OK')
 
 # --- Get platforms ---
 # Call to this function will write file 'assets/MobyGames_get_platforms.json'
@@ -53,12 +51,13 @@ table_str = [
 ]
 for pname in sorted(platform_dic, reverse = False):
     try:
-        table_str.append([ unicode(platform_dic[pname]), unicode(pname) ])
+        table_str.append([ platform_dic[pname], pname ])
     except UnicodeEncodeError as ex:
         print('Exception UnicodeEncodeError')
-        print('ID {0}'.format(platform['id']))
+        print('ID {0}'.format(platform_dic['id']))
         sys.exit(0)
-table_str_list = text_render_table(table_str)
+        
+table_str_list = text.render_table_str(table_str)
 sl.extend(table_str_list)
 text_str = '\n'.join(sl)
 print('\n'.join(table_str_list))
@@ -70,7 +69,7 @@ text_file.write(text_str.encode('utf8'))
 text_file.close()
 
 # --- Output file in CSV format ---
-text_csv_slist = text_render_table_CSV(table_str)
+text_csv_slist = text.render_table_CSV_slist(table_str)
 text_csv = '\n'.join(text_csv_slist)
 print('Writing file "{}"'.format(csv_fname))
 text_file = open(csv_fname, 'w')

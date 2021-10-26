@@ -69,7 +69,11 @@ class Test_mobygames_scraper(unittest.TestCase):
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     @patch('ael.api.client_get_rom')
-    def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get):        
+    def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get):    
+        """
+        First test. Test metadata scraping.
+        """
+        print('BEGIN Test_mobygames_scraper::test_scraping_metadata_for_game()')    
         # arrange
         settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
         
