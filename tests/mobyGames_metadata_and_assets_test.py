@@ -47,22 +47,25 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
     ROOT_DIR = ''
     TEST_DIR = ''
     TEST_ASSETS_DIR = ''
+    TEST_OUTPUT_DIR = ''
 
     @classmethod
     def setUpClass(cls):        
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
+        cls.TEST_OUTPUT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'output/'))
                 
         print('ROOT DIR: {}'.format(cls.ROOT_DIR))
         print('TEST DIR: {}'.format(cls.TEST_DIR))
         print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('TEST OUTPUT DIR: {}'.format(cls.TEST_OUTPUT_DIR))
         print('---------------------------------------------------------------------------')
     
     @unittest.skip('You must have an API key to use this resource')
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     def test_mobygames_metdata(self, settings_mock:MagicMock):         
-        settings_mock.side_effect = lambda key: self.TEST_ASSETS_DIR if key == 'scraper_cache_dir' else ''
+        settings_mock.side_effect = lambda key: self.TEST_OUTPUT_DIR if key == 'scraper_cache_dir' else ''
         settings_mock.side_effect = lambda key: scraper_mobygames_apikey if key == 'scraper_mobygames_apikey' else ''
   
         # --- main ---------------------------------------------------------------------------------------
@@ -71,7 +74,7 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         # --- Create scraper object ---
         scraper_obj = MobyGames()
         scraper_obj.set_verbose_mode(False)
-        scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+        scraper_obj.set_debug_file_dump(True, self.TEST_OUTPUT_DIR)
         status_dic = kodi.new_status_dic('Scraper test was OK')
 
         # --- Choose data for testing ---
