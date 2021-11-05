@@ -32,6 +32,7 @@ from urllib.parse import quote_plus
 from ael import constants, platforms, settings
 from ael.utils import io, net, kodi, text
 from ael.scrapers import Scraper
+from ael.api import ROMObj
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ class MobyGames(Scraper):
             'and introduce the API key in AEL addon settings.'
         )
 
-    def get_candidates(self, search_term:str, rom_FN:io.FileName, rom_checksums_FN, platform, status_dic):
+    def get_candidates(self, search_term:str, rom:ROMObj, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
@@ -132,12 +133,10 @@ class MobyGames(Scraper):
             return None
 
         # Prepare data for scraping.
-        rombase_noext = rom_FN.getBaseNoExt()
-
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = convert_AEL_platform_to_MobyGames(platform)
         logger.debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
-        logger.debug('MobyGames.get_candidates() rombase_noext      "{}"'.format(rombase_noext))
+        logger.debug('MobyGames.get_candidates() rom identifier     "{}"'.format(rom.get_identifier()))
         logger.debug('MobyGames.get_candidates() AEL platform       "{}"'.format(platform))
         logger.debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates(

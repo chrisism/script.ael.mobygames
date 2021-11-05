@@ -84,7 +84,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom_id = random_string(5)
         rom = ROMObj({
             'id': rom_id,
-            'filename': Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip',
+            'scanned_data': { 'file':Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip'},
             'platform': 'Nintendo NES'
         })
         api_rom_mock.return_value = rom
@@ -117,7 +117,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom_id = random_string(5)
         rom = ROMObj({
             'id': rom_id,
-            'filename': Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip',
+            'scanned_data': { 'file': Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip'},
             'platform': 'Nintendo NES',
             'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
             'asset_paths': {
