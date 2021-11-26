@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher scraping engine for MobyGames.
+# Advanced Kodi Launcher scraping engine for MobyGames.
 #
 # --- Information about scraping ---
 # https://github.com/muldjord/skyscraper
