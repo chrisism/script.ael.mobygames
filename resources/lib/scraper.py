@@ -28,11 +28,11 @@ from datetime import datetime, timedelta
 
 from urllib.parse import quote_plus
 
-# --- AEL packages ---
-from ael import constants, platforms, settings
-from ael.utils import io, net, kodi, text
-from ael.scrapers import Scraper
-from ael.api import ROMObj
+# --- AKL packages ---
+from akl import constants, platforms, settings
+from akl.utils import io, net, kodi, text
+from akl.scrapers import Scraper
+from akl.api import ROMObj
 
 logger = logging.getLogger(__name__)
 
@@ -120,9 +120,9 @@ class MobyGames(Scraper):
         status_dic['status'] = False
         status_dic['dialog'] = kodi.KODI_MESSAGE_DIALOG
         status_dic['msg'] = (
-            'AEL requires your MobyGames API key. '
+            'AKL requires your MobyGames API key. '
             'Visit https://www.mobygames.com/info/api for directions about how to get your key '
-            'and introduce the API key in AEL addon settings.'
+            'and introduce the API key in AKL addon settings.'
         )
 
     def get_candidates(self, search_term:str, rom:ROMObj, platform, status_dic):
@@ -134,10 +134,10 @@ class MobyGames(Scraper):
 
         # Prepare data for scraping.
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        scraper_platform = convert_AEL_platform_to_MobyGames(platform)
+        scraper_platform = convert_AKL_platform_to_MobyGames(platform)
         logger.debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
         logger.debug('MobyGames.get_candidates() rom identifier     "{}"'.format(rom.get_identifier()))
-        logger.debug('MobyGames.get_candidates() AEL platform       "{}"'.format(platform))
+        logger.debug('MobyGames.get_candidates() AKL platform       "{}"'.format(platform))
         logger.debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, platform, scraper_platform, status_dic)
@@ -261,11 +261,11 @@ class MobyGames(Scraper):
         candidate_list = []
         for item in games_json:
             title = item['title']
-            scraped_ael_platform = convert_MobyGames_platform_to_AEL_platform(scraper_platform) #item['platform'])
+            scraped_akl_platform = convert_MobyGames_platform_to_AKL_platform(scraper_platform) #item['platform'])
 
             candidate = self._new_candidate_dic()
             candidate['id'] = item['game_id']
-            candidate['display_name'] = '{} ({})'.format(title, scraped_ael_platform.long_name)
+            candidate['display_name'] = '{} ({})'.format(title, scraped_akl_platform.long_name)
             candidate['platform'] = platform
             candidate['scraper_platform'] = scraper_platform
             candidate['order'] = 1
@@ -477,7 +477,7 @@ class MobyGames(Scraper):
         return json_data
 
 # ------------------------------------------------------------------------------------------------
-# TheGamesDB supported platforms mapped to AEL platforms.
+# TheGamesDB supported platforms mapped to AKL platforms.
 # ------------------------------------------------------------------------------------------------
 DEFAULT_PLAT_MOBYGAMES = 0
 # * MobyGames API cannot be used withouth a valid platform.
@@ -485,27 +485,27 @@ DEFAULT_PLAT_MOBYGAMES = 0
 #    "HTTP Error 422: UNPROCESSABLE ENTITY"
 # * If '' is used as the Unknwon platform then MobyGames returns and HTTP error
 #   "HTTP Error 400: BAD REQUEST"
-# * The solution is to use '0' as the unknwon platform. AEL will detect this and
+# * The solution is to use '0' as the unknwon platform. AKL will detect this and
 #   will remove the '&platform={}' parameter from the search URL.
-def convert_AEL_platform_to_MobyGames(platform_long_name) -> int:
-    matching_platform = platforms.get_AEL_platform(platform_long_name)
-    if matching_platform.compact_name in AEL_compact_platform_MobyGames_mapping:
-        return AEL_compact_platform_MobyGames_mapping[matching_platform.compact_name]
+def convert_AKL_platform_to_MobyGames(platform_long_name) -> int:
+    matching_platform = platforms.get_AKL_platform(platform_long_name)
+    if matching_platform.compact_name in AKL_compact_platform_MobyGames_mapping:
+        return AKL_compact_platform_MobyGames_mapping[matching_platform.compact_name]
     
-    if matching_platform.aliasof is not None and matching_platform.aliasof in AEL_compact_platform_MobyGames_mapping:
-        return AEL_compact_platform_MobyGames_mapping[matching_platform.aliasof]
+    if matching_platform.aliasof is not None and matching_platform.aliasof in AKL_compact_platform_MobyGames_mapping:
+        return AKL_compact_platform_MobyGames_mapping[matching_platform.aliasof]
         
     # Platform not found.
     return DEFAULT_PLAT_MOBYGAMES
 
-def convert_MobyGames_platform_to_AEL_platform(moby_platform) -> platforms.Platform:
-    if moby_platform in MobyGames_AEL_compact_platform_mapping:
-        platform_compact_name = MobyGames_AEL_compact_platform_mapping[moby_platform]
-        return platforms.get_AEL_platform_by_compact(platform_compact_name)
+def convert_MobyGames_platform_to_AKL_platform(moby_platform) -> platforms.Platform:
+    if moby_platform in MobyGames_AKL_compact_platform_mapping:
+        platform_compact_name = MobyGames_AKL_compact_platform_mapping[moby_platform]
+        return platforms.get_AKL_platform_by_compact(platform_compact_name)
         
-    return platforms.get_AEL_platform_by_compact(platforms.PLATFORM_UNKNOWN_COMPACT)
+    return platforms.get_AKL_platform_by_compact(platforms.PLATFORM_UNKNOWN_COMPACT)
 
-AEL_compact_platform_MobyGames_mapping = {
+AKL_compact_platform_MobyGames_mapping = {
     '3do': 35,
     'cpc': 60, 
     'a2600': 28,
@@ -597,6 +597,6 @@ AEL_compact_platform_MobyGames_mapping = {
     'supervision': 109
 }
 
-MobyGames_AEL_compact_platform_mapping = {}
-for key, value in AEL_compact_platform_MobyGames_mapping.items():
-    MobyGames_AEL_compact_platform_mapping[value] = key
+MobyGames_AKL_compact_platform_mapping = {}
+for key, value in AKL_compact_platform_MobyGames_mapping.items():
+    MobyGames_AKL_compact_platform_mapping[value] = key

@@ -16,8 +16,8 @@ logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s'
 logger = logging.getLogger(__name__)
 
 from resources.lib.scraper import MobyGames
-from ael.utils import kodi, text
-from ael import constants
+from akl.utils import kodi, text
+from akl import constants
 
 # --- configuration ------------------------------------------------------------------------------
 txt_fname = 'data/MobyGames_platforms.txt'

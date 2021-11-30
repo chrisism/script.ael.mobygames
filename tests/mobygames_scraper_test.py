@@ -13,11 +13,11 @@ logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s'
 logger = logging.getLogger(__name__)
 
 from resources.lib.scraper import MobyGames
-from ael.scrapers import ScrapeStrategy, ScraperSettings
+from akl.scrapers import ScrapeStrategy, ScraperSettings
 
-from ael.api import ROMObj
-from ael import constants
-from ael.utils import net
+from akl.api import ROMObj
+from akl import constants
+from akl.utils import net
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -68,7 +68,7 @@ class Test_mobygames_scraper(unittest.TestCase):
 
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
-    @patch('ael.api.client_get_rom')
+    @patch('akl.api.client_get_rom')
     def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get):    
         """
         First test. Test metadata scraping.
@@ -104,7 +104,7 @@ class Test_mobygames_scraper(unittest.TestCase):
     @patch('resources.lib.scraper.net.download_img')
     @patch('resources.lib.scraper.io.FileName.scanFilesInPath', autospec=True)
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
-    @patch('ael.api.client_get_rom')
+    @patch('akl.api.client_get_rom')
     def test_scraping_assets_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, mock_imgs, mock_get):
         # arrange
         settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
