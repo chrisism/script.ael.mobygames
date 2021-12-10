@@ -32,16 +32,16 @@ def mocked_mobygames(url, url_log=None):
     mocked_json_file = ''
 
     if 'format=brief&title=' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_list.json"
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_list.json"
 
     if 'screenshots' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_screenshots.json"
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_screenshots.json"
 
     if 'covers' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_covers.json"
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_covers.json"
                         
     if re.search('/games/(\d*)\?', url):
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania.json"
         
     if mocked_json_file == '':
         return net.get_URL(url)
@@ -117,7 +117,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom_id = random_string(5)
         rom = ROMObj({
             'id': rom_id,
-            'scanned_data': { 'file': Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip'},
+            'scanned_data': { 'file': Test_mobygames_scraper.TEST_ASSETS_DIR + '/castlevania.zip'},
             'platform': 'Nintendo NES',
             'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
             'asset_paths': {
