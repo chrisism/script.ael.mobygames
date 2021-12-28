@@ -41,7 +41,7 @@ games = {
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris.zip', 'mjhyewqr'),
 }
 
-scraper_mobygames_apikey = 'JIztIJfT6BG3u/WteYukQQ=='  # NEVER COMMIT THIS PASSWORD
+scraper_mobygames_apikey = os.getenv('MOBY_KEY')
 
 def get_setting(key:str):
     if key == 'scraper_cache_dir': return Test_mobygames_metadata_and_assets.TEST_OUTPUT_DIR
