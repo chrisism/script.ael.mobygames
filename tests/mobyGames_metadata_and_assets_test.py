@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 from resources.lib.scraper import MobyGames
 from akl.utils import kodi, io
+from akl.api import ROMObj
 from akl import constants
 
 # --- Test data -----------------------------------------------------------------------------------
@@ -40,14 +41,19 @@ games = {
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris.zip', 'mjhyewqr'),
 }
 
-scraper_mobygames_apikey = ''  # NEVER COMMIT THIS PASSWORD
+scraper_mobygames_apikey = 'JIztIJfT6BG3u/WteYukQQ=='  # NEVER COMMIT THIS PASSWORD
+
+def get_setting(key:str):
+    if key == 'scraper_cache_dir': return Test_mobygames_metadata_and_assets.TEST_OUTPUT_DIR
+    if key == 'scraper_mobygames_apikey': return scraper_mobygames_apikey   
+    return ''
 
 class Test_mobygames_metadata_and_assets(unittest.TestCase):
     
     ROOT_DIR = ''
     TEST_DIR = ''
-    TEST_ASSETS_DIR = ''
     TEST_OUTPUT_DIR = ''
+    TEST_ASSETS_DIR = ''
 
     @classmethod
     def setUpClass(cls):        
@@ -61,13 +67,72 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         print('TEST OUTPUT DIR: {}'.format(cls.TEST_OUTPUT_DIR))
         print('---------------------------------------------------------------------------')
+
+        if not os.path.exists(cls.TEST_OUTPUT_DIR):
+            os.makedirs(cls.TEST_OUTPUT_DIR)
     
     @unittest.skip('You must have an API key to use this resource')
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
-    def test_mobygames_metdata(self, settings_mock:MagicMock):         
-        settings_mock.side_effect = lambda key: self.TEST_OUTPUT_DIR if key == 'scraper_cache_dir' else ''
-        settings_mock.side_effect = lambda key: scraper_mobygames_apikey if key == 'scraper_mobygames_apikey' else ''
-  
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
+    def test_mobygames_metadata(self, settings_mock):     
+        # --- main ---------------------------------------------------------------------------------------
+        print('*** Fetching candidate game list ********************************************************')
+
+        # --- Create scraper object ---
+        scraper_obj = MobyGames()
+        scraper_obj.set_verbose_mode(False)
+        scraper_obj.set_debug_file_dump(True, self.TEST_OUTPUT_DIR)
+        status_dic = kodi.new_status_dic('Scraper test was OK')
+
+        # --- Choose data for testing ---
+        # search_term, rombase, platform = common.games['metroid']
+        # search_term, rombase, platform = common.games['mworld']
+        #search_term, rombase, platform = common.games['sonic_megaDrive']
+        search_term, rombase, platform = games['sonic_genesis'] # Aliased platform
+        # search_term, rombase, platform = common.games['chakan']
+        # search_term, rombase, platform = common.games['console_wrong_title']
+        # search_term, rombase, platform = common.games['console_wrong_platform']
+        #search_term, rombase, platform = ('Sniper Elite III', 'Sniper.exe', 'Microsoft Windows')
+
+        subject = ROMObj({
+            'id': '1234',
+            'scanned_data': {
+                'identifier': search_term,
+                'file': f'/roms/{rombase}'
+            },
+            'platform': platform,
+            'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
+            'asset_paths': {
+                constants.ASSET_TITLE_ID: '/titles/',
+            }
+        })
+
+        # --- Get candidates, print them and set first candidate ---
+        rom_FN = io.FileName(rombase)
+        if scraper_obj.check_candidates_cache(rom_FN.getBase(), platform):
+            print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
+        else:
+            print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
+            
+        candidate_list = scraper_obj.get_candidates(search_term, subject, platform, status_dic)
+        # pprint.pprint(candidate_list)
+        self.assertTrue(status_dic['status'], 'Status error "{}"'.format(status_dic['msg']))
+        self.assertIsNotNone(candidate_list, 'Error/exception in get_candidates()')
+        self.assertNotEquals(len(candidate_list), 0, 'No candidates found.')
+        
+        for candidate in candidate_list:
+            print(candidate)
+        scraper_obj.set_candidate(rom_FN.getBase(), platform, candidate_list[0])
+            
+        # --- Print metadata of first candidate ----------------------------------------------------------
+        print('*** Fetching game metadata **************************************************************')
+        metadata = scraper_obj.get_metadata(status_dic)
+        # pprint.pprint(metadata)
+        print(metadata)
+        scraper_obj.flush_disk_cache()
+
+    @unittest.skip('You must have an API key to use this resource')
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
+    def test_mobygames_assets(self, settings_mock):                 
         # --- main ---------------------------------------------------------------------------------------
         print('*** Fetching candidate game list ********************************************************')
 
@@ -86,14 +151,26 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         # search_term, rombase, platform = common.games['console_wrong_title']
         # search_term, rombase, platform = common.games['console_wrong_platform']
 
+        subject = ROMObj({
+            'id': '1234',
+            'scanned_data': {
+                'identifier': search_term,
+                'file': f'/roms/{rombase}'
+            },
+            'platform': platform,
+            'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
+            'asset_paths': {
+                constants.ASSET_TITLE_ID: '/titles/',
+            }
+        })
+
         # --- Get candidates, print them and set first candidate ---
         rom_FN = io.FileName(rombase)
-        rom_checksums_FN = io.FileName(rombase)
-        if scraper_obj.check_candidates_cache(rom_FN, platform):
+        if scraper_obj.check_candidates_cache(rom_FN.getBase(), platform):
             print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
         else:
             print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
-        candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
+        candidate_list = scraper_obj.get_candidates(search_term, subject, platform, status_dic)
         # pprint.pprint(candidate_list)
         self.assertTrue(status_dic['status'], 'Status error "{}"'.format(status_dic['msg']))
         self.assertIsNotNone(candidate_list, 'Error/exception in get_candidates()')
@@ -102,56 +179,7 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         for candidate in candidate_list:
             print(candidate)
             
-        scraper_obj.set_candidate(rom_FN, platform, candidate_list[0])
-
-        # --- Print metadata of first candidate ----------------------------------------------------------
-        print('*** Fetching game metadata **************************************************************')
-        metadata = scraper_obj.get_metadata(status_dic)
-        # pprint.pprint(metadata)
-        print(metadata)
-        scraper_obj.flush_disk_cache()
-
-    @unittest.skip('You must have an API key to use this resource')
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
-    def test_mobygames_assets(self, settings_mock:MagicMock):         
-        settings_mock.side_effect = lambda key: self.TEST_ASSETS_DIR if key == 'scraper_cache_dir' else ''
-        settings_mock.side_effect = lambda key: scraper_mobygames_apikey if key == 'scraper_mobygames_apikey' else ''
-                 
-        # --- main ---------------------------------------------------------------------------------------
-        print('*** Fetching candidate game list ********************************************************')
-
-        # --- Create scraper object ---
-        scraper_obj = MobyGames()
-        scraper_obj.set_verbose_mode(False)
-        scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
-        status_dic = kodi.new_status_dic('Scraper test was OK')
-
-        # --- Choose data for testing ---
-        # search_term, rombase, platform = common.games['metroid']
-        # search_term, rombase, platform = common.games['mworld']
-        #search_term, rombase, platform = common.games['sonic_megaDrive']
-        search_term, rombase, platform = games['sonic_genesis'] # Aliased platform
-        # search_term, rombase, platform = common.games['chakan']
-        # search_term, rombase, platform = common.games['console_wrong_title']
-        # search_term, rombase, platform = common.games['console_wrong_platform']
-
-        # --- Get candidates, print them and set first candidate ---
-        rom_FN = io.FileName(rombase)
-        rom_checksums_FN = io.FileName(rombase)
-        if scraper_obj.check_candidates_cache(rom_FN, platform):
-            print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
-        else:
-            print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
-        candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
-        # pprint.pprint(candidate_list)
-        self.assertTrue(status_dic['status'], 'Status error "{}"'.format(status_dic['msg']))
-        self.assertIsNotNone(candidate_list, 'Error/exception in get_candidates()')
-        self.assertNotEquals(len(candidate_list), 0, 'No candidates found.')
-        
-        for candidate in candidate_list:
-            print(candidate)
-            
-        scraper_obj.set_candidate(rom_FN, platform, candidate_list[0])
+        scraper_obj.set_candidate(rom_FN.getBase(), platform, candidate_list[0])
 
         # --- Print list of assets found -----------------------------------------------------------------
         print('*** Fetching game assets ****************************************************************')

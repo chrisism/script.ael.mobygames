@@ -21,11 +21,12 @@
 from __future__ import unicode_literals
 from __future__ import division
 
+import typing
 import logging
 import json
 import re
-from datetime import datetime, timedelta
 
+from datetime import datetime, timedelta
 from urllib.parse import quote_plus
 
 # --- AKL packages ---
@@ -73,10 +74,11 @@ class MobyGames(Scraper):
     }
     
     # This allows to change the API version easily.
-    URL_games     = 'https://api.mobygames.com/v1/games'
-    URL_platforms = 'https://api.mobygames.com/v1/platforms'
+    URL_games           = 'https://api.mobygames.com/v1/games'
+    URL_platforms       = 'https://api.mobygames.com/v1/platforms'
+    URL_game_platform   = 'https://api.mobygames.com/v1/games/{}/platforms/{}'
     
-# --- Constructor ----------------------------------------------------------------------------
+    # --- Constructor ----------------------------------------------------------------------------
     def __init__(self):
         # --- This scraper settings ---
         self.api_key = settings.getSetting('scraper_mobygames_apikey')
@@ -125,7 +127,7 @@ class MobyGames(Scraper):
             'and introduce the API key in AKL addon settings.'
         )
 
-    def get_candidates(self, search_term:str, rom:ROMObj, platform, status_dic):
+    def get_candidates(self, search_term:str, rom:ROMObj, platform, status_dic) -> typing.List[dict]:
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
@@ -166,12 +168,25 @@ class MobyGames(Scraper):
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_metadata.json', json_data)
 
+        # --- Get extra platform specific data ---
+        url_tail = f'?api_key={self.api_key}'
+        url = MobyGames.URL_game_platform.format(
+            self.candidate['id'], self.candidate['scraper_platform']) + url_tail
+
+        extra_json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
+        self._dump_json_debug('MobyGames_get_metadata_by_platform.json', extra_json_data)
+
         # --- Parse game page data ---
         gamedata = self._new_gamedata_dic()
-        gamedata['title'] = self._parse_metadata_title(json_data)
-        gamedata['year']  = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
-        gamedata['genre'] = self._parse_metadata_genre(json_data)
-        gamedata['plot']  = self._parse_metadata_plot(json_data)
+        gamedata['title']       = self._parse_metadata_title(json_data)
+        gamedata['year']        = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
+        gamedata['genre']       = self._parse_metadata_genre(json_data)
+        gamedata['plot']        = self._parse_metadata_plot(json_data)
+        gamedata['rating']      = self._parse_metadata_rating(json_data)
+        gamedata['developer']   = self._parse_metadata_developer(extra_json_data)
+        gamedata['nplayers']    = self._parse_metadata_nplayers(extra_json_data)
+        gamedata['tags']        = self._parse_metadata_tags(extra_json_data)
 
         # --- Put metadata in the cache ---
         logger.debug('MobyGames.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
@@ -245,7 +260,7 @@ class MobyGames(Scraper):
         # --- Retrieve JSON data with list of games ---
         search_string_encoded = quote_plus(search_term)
         if scraper_platform == '0':
-            # Unkwnon or wrong platform case.
+            # Unknown or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(
                 self.api_key, search_string_encoded)
         else:
@@ -313,6 +328,68 @@ class MobyGames(Scraper):
             plot_str = constants.DEFAULT_META_PLOT
 
         return plot_str
+
+    def _parse_metadata_rating(self, json_data) -> str:
+        if 'moby_score' in json_data and json_data['moby_score'] is not None:
+            rating = json_data['moby_score']
+            return rating
+        return None
+
+    def _parse_metadata_developer(self, json_data:dict) -> str:
+        if not 'releases' in json_data: return None
+        if not 'companies' in json_data['releases']: return None
+
+        for company in json_data['releases']['companies']:
+            if company['role'] == 'Developed by':
+                return company['company_name']
+        return None
+
+    def _parse_metadata_nplayers(self, json_data:dict) -> str:
+        if 'attributes' in json_data:
+            attributes:list = json_data['attributes']
+            for attribute in attributes:
+                if attribute['attribute_category_id'] == 40:
+                    nplayers_str = str(attribute['attribute_name'])
+                    return nplayers_str
+                    
+        nplayers_str = constants.DEFAULT_META_NPLAYERS
+        return nplayers_str
+
+    def _parse_metadata_tags(self, json_data:dict) -> list:
+        tags = []
+        if not 'attributes' in json_data:
+            return tags
+
+        attributes:list = json_data['attributes']
+        for attribute in attributes:
+            if attribute['attribute_category_id'] == 6: # Input Devices Supported
+                tags.append(self._parse_tag_input_devices(attribute))
+            if attribute['attribute_category_id'] == 38: # Number of Online Players
+                tags.append(self._parse_tag_online_players(attribute))
+            if attribute['attribute_category_id'] == 45: # Video Resolutions Supported
+                tags.append(self._parse_tag_videoresolution(attribute))
+            if attribute['attribute_category_id'] == 65: # Controller Types Supported
+                tags.append(self._parse_tag_controllers(attribute))
+        return tags
+
+    def _parse_tag_online_players(self, attribute:dict):
+        online_players = str(attribute['attribute_name'])
+        return online_players
+
+    def _parse_tag_videoresolution(self, attribute:dict):
+        resolution = str(attribute['attribute_name'])
+        resolution = resolution.replace('\u00d7', 'x')
+        return resolution
+
+    def _parse_tag_controllers(self, attribute:dict):
+        controller_type = str(attribute['attribute_name'])
+        if controller_type == 'Digital Joystick':
+            return 'controller'
+        return None
+
+    def _parse_tag_input_devices(self, attribute:dict):
+        device = str(attribute['attribute_name'])
+        return device.lower()
 
     # Get ALL available assets for game.
     # Cache all assets in the internal disk cache.
