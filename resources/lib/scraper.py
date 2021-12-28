@@ -179,14 +179,15 @@ class MobyGames(Scraper):
 
         # --- Parse game page data ---
         gamedata = self._new_gamedata_dic()
-        gamedata['title']       = self._parse_metadata_title(json_data)
-        gamedata['year']        = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
-        gamedata['genre']       = self._parse_metadata_genre(json_data)
-        gamedata['plot']        = self._parse_metadata_plot(json_data)
-        gamedata['rating']      = self._parse_metadata_rating(json_data)
-        gamedata['developer']   = self._parse_metadata_developer(extra_json_data)
-        gamedata['nplayers']    = self._parse_metadata_nplayers(extra_json_data)
-        gamedata['tags']        = self._parse_metadata_tags(extra_json_data)
+        gamedata['title']           = self._parse_metadata_title(json_data)
+        gamedata['year']            = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
+        gamedata['genre']           = self._parse_metadata_genre(json_data)
+        gamedata['plot']            = self._parse_metadata_plot(json_data)
+        gamedata['rating']          = self._parse_metadata_rating(json_data)
+        gamedata['developer']       = self._parse_metadata_developer(extra_json_data)
+        gamedata['nplayers']        = self._parse_metadata_nplayers(extra_json_data)
+        gamedata['nplayers_online'] = self._parse_metadata_nplayers_online(extra_json_data)
+        gamedata['tags']            = self._parse_metadata_tags(extra_json_data)
 
         # --- Put metadata in the cache ---
         logger.debug('MobyGames.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
@@ -349,10 +350,35 @@ class MobyGames(Scraper):
             attributes:list = json_data['attributes']
             for attribute in attributes:
                 if attribute['attribute_category_id'] == 40:
-                    nplayers_str = str(attribute['attribute_name'])
-                    return nplayers_str
+                    return self._parse_nplayers(attribute)
                     
         nplayers_str = constants.DEFAULT_META_NPLAYERS
+        return nplayers_str
+
+    def _parse_metadata_nplayers_online(self, json_data:dict) -> str:
+        if 'attributes' in json_data:
+            attributes:list = json_data['attributes']
+            for attribute in attributes:
+                if attribute['attribute_category_id'] == 38:
+                    return self._parse_nplayers(attribute)
+                    
+        nplayers_str = constants.DEFAULT_META_NPLAYERS
+        return nplayers_str
+
+    def _parse_nplayers(self, attribute:dict) -> str:
+        if not 'attribute_name' in attribute or not attribute['attribute_name']:
+            nplayers_str = constants.DEFAULT_META_NPLAYERS
+            return nplayers_str
+                    
+        nplayers_str = str(attribute['attribute_name'])
+        nplayers_str = nplayers_str.replace(' Players', '')
+        nplayers_str = nplayers_str.replace(' Player', '')
+
+        if nplayers_str.isnumeric():
+            return nplayers_str
+
+        match = re.search('\d+\\-(\d+)', nplayers_str)
+        nplayers_str = match.group(1)
         return nplayers_str
 
     def _parse_metadata_tags(self, json_data:dict) -> list:
@@ -364,17 +390,11 @@ class MobyGames(Scraper):
         for attribute in attributes:
             if attribute['attribute_category_id'] == 6: # Input Devices Supported
                 tags.append(self._parse_tag_input_devices(attribute))
-            if attribute['attribute_category_id'] == 38: # Number of Online Players
-                tags.append(self._parse_tag_online_players(attribute))
             if attribute['attribute_category_id'] == 45: # Video Resolutions Supported
                 tags.append(self._parse_tag_videoresolution(attribute))
             if attribute['attribute_category_id'] == 65: # Controller Types Supported
                 tags.append(self._parse_tag_controllers(attribute))
         return tags
-
-    def _parse_tag_online_players(self, attribute:dict):
-        online_players = str(attribute['attribute_name'])
-        return online_players
 
     def _parse_tag_videoresolution(self, attribute:dict):
         resolution = str(attribute['attribute_name'])
