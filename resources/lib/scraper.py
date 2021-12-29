@@ -50,6 +50,12 @@ class MobyGames(Scraper):
         constants.META_YEAR_ID,
         constants.META_GENRE_ID,
         constants.META_PLOT_ID,
+        constants.META_DEVELOPER_ID,
+        constants.META_ESRB_ID,
+        constants.META_RATING_ID,
+        constants.META_NPLAYERS_ID,
+        constants.META_NPLAYERS_ONLINE_ID,
+        constants.META_TAGS_ID
     ]
     supported_asset_list = [
         constants.ASSET_TITLE_ID,
@@ -185,6 +191,7 @@ class MobyGames(Scraper):
         gamedata['plot']            = self._parse_metadata_plot(json_data)
         gamedata['rating']          = self._parse_metadata_rating(json_data)
         gamedata['developer']       = self._parse_metadata_developer(extra_json_data)
+        gamedata['esrb']            = self._parse_metadata_esrb(extra_json_data)
         gamedata['nplayers']        = self._parse_metadata_nplayers(extra_json_data)
         gamedata['nplayers_online'] = self._parse_metadata_nplayers_online(extra_json_data)
         gamedata['tags']            = self._parse_metadata_tags(extra_json_data)
@@ -338,12 +345,23 @@ class MobyGames(Scraper):
 
     def _parse_metadata_developer(self, json_data:dict) -> str:
         if not 'releases' in json_data: return None
-        if not 'companies' in json_data['releases']: return None
+        if len(json_data['releases']) == 0: return None
+        if not 'companies' in json_data['releases'][0]: return None
 
-        for company in json_data['releases']['companies']:
+        for company in json_data['releases'][0]['companies']:
             if company['role'] == 'Developed by':
                 return company['company_name']
         return None
+
+    def _parse_metadata_esrb(self, json_data:dict) -> str:
+        if 'ratings' not in json_data or json_data['ratings'] is None:
+            return constants.DEFAULT_META_ESRB
+            
+        for rating in json_data['ratings']:
+            if rating['rating_system_name'] == 'ESRB Rating':
+                return rating['rating_name']
+
+        return constants.DEFAULT_META_ESRB
 
     def _parse_metadata_nplayers(self, json_data:dict) -> str:
         if 'attributes' in json_data:
@@ -388,27 +406,53 @@ class MobyGames(Scraper):
 
         attributes:list = json_data['attributes']
         for attribute in attributes:
+            tag = None
+            if attribute['attribute_category_id'] == 2: # Video Modes Supported
+                tag = self._parse_tag_videomodes(attribute)
             if attribute['attribute_category_id'] == 6: # Input Devices Supported
-                tags.append(self._parse_tag_input_devices(attribute))
+                tag = self._parse_tag_input_devices(attribute)
             if attribute['attribute_category_id'] == 45: # Video Resolutions Supported
-                tags.append(self._parse_tag_videoresolution(attribute))
+                tag = self._parse_tag_videoresolution(attribute)
+            if attribute['attribute_category_id'] == 27: # Sound Capabilities
+                tag = self._parse_tag_sound(attribute)
+            if attribute['attribute_category_id'] == 52: # Multiplayer Game Modes
+                tag = self._parse_tag_mp_modes(attribute)
             if attribute['attribute_category_id'] == 65: # Controller Types Supported
-                tags.append(self._parse_tag_controllers(attribute))
+                tag = self._parse_tag_controllers(attribute)
+
+            if tag is not None: tags.append(tag)
         return tags
 
-    def _parse_tag_videoresolution(self, attribute:dict):
+    def _parse_tag_videomodes(self, attribute:dict) -> str:
+        videomode = str(attribute['attribute_name'])
+        videomode = videomode.replace('HDTV ', '')
+        videomode = videomode.replace('Progressive Scan', '')
+        return videomode
+
+    def _parse_tag_videoresolution(self, attribute:dict) -> str:
         resolution = str(attribute['attribute_name'])
         resolution = resolution.replace('\u00d7', 'x')
         return resolution
 
-    def _parse_tag_controllers(self, attribute:dict):
+    def _parse_tag_sound(self, attribute:dict) -> str:
+        sound = str(attribute['attribute_name'])
+        return sound.lower()
+
+    def _parse_tag_controllers(self, attribute:dict) -> str:
         controller_type = str(attribute['attribute_name'])
         if controller_type == 'Digital Joystick':
             return 'controller'
         return None
 
-    def _parse_tag_input_devices(self, attribute:dict):
+    def _parse_tag_mp_modes(self, attribute:dict) -> str:
+        mode = str(attribute['attribute_name'])
+        if mode == 'Free-for-all / One-on-one (VS)':
+            return 'free-for-all'
+        return mode.lower()
+
+    def _parse_tag_input_devices(self, attribute:dict) -> str:
         device = str(attribute['attribute_name'])
+        if device == 'Other Input Devices': return None
         return device.lower()
 
     # Get ALL available assets for game.

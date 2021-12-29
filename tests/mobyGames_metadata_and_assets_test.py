@@ -91,7 +91,11 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         # search_term, rombase, platform = common.games['chakan']
         # search_term, rombase, platform = common.games['console_wrong_title']
         # search_term, rombase, platform = common.games['console_wrong_platform']
-        search_term, rombase, platform = ('Sniper Elite III', 'Sniper.exe', 'Microsoft Windows')
+        # search_term, rombase, platform = ('Sniper Elite III', 'Sniper.exe', 'Microsoft Windows')
+        # search_term, rombase, platform = ('Call of Juarez: Gunslinger', 'juarez.exe', 'Microsoft Windows')
+        # :search_term, rombase, platform = ('Planet Coaster', 'coaster.exe', 'Microsoft Windows')
+        # search_term, rombase, platform = ('Call of duty: World at war', 'cod.exe', 'Microsoft Windows')
+        search_term, rombase, platform = ('Call of duty: World at war', 'cod.exe', 'Sony PlayStation 3')
 
         subject = ROMObj({
             'id': '1234',

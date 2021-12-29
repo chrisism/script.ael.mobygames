@@ -49,7 +49,7 @@
                 </setting>
                 <setting id="akl.scraper.supported_metadata" type="string" label="Metadata supported by this scraper" help="">
                     <level>4</level>
-                    <default>title|year|genre|plot</default>
+                    <default>title|year|genre|plot|rating|esrb|developer|nplayers|nplayers_online|tags</default>
                 </setting>
                 <setting id="akl.scraper.supported_assets" type="string" label="Assets supported by this scraper" help="">
                     <level>4</level>
