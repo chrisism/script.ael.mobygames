@@ -425,8 +425,12 @@ class MobyGames(Scraper):
 
     def _parse_tag_videomodes(self, attribute:dict) -> str:
         videomode = str(attribute['attribute_name'])
+        if videomode == 'Full screen': return None
+        if videomode == 'Window': return None
+
         videomode = videomode.replace('HDTV ', '')
         videomode = videomode.replace('Progressive Scan', '')
+        videomode = videomode.replace('\u00d7', 'x')
         return videomode
 
     def _parse_tag_videoresolution(self, attribute:dict) -> str:
