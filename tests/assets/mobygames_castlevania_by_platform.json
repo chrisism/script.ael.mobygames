@@ -1,0 +1,161 @@
+{
+    "attributes" : [
+        {
+            "attribute_category_id" : 6, 
+            "attribute_category_name" : "Input Devices Supported", 
+            "attribute_id" : 279, 
+            "attribute_name" : "PowerGlove"
+        }, 
+        {
+            "attribute_category_id" : 19, 
+            "attribute_category_name" : "Number of Players Supported", 
+            "attribute_id" : 140, 
+            "attribute_name" : "1 Player"
+        }, 
+        {
+            "attribute_category_id" : 21, 
+            "attribute_category_name" : "Media Type", 
+            "attribute_id" : 198, 
+            "attribute_name" : "Cartridge"
+        }, 
+        {
+            "attribute_category_id" : 21, 
+            "attribute_category_name" : "Media Type", 
+            "attribute_id" : 2001, 
+            "attribute_name" : "Famicom Disk System"
+        }, 
+        {
+            "attribute_category_id" : 122, 
+            "attribute_category_name" : "Save Game Methods", 
+            "attribute_id" : 2917, 
+            "attribute_name" : "Manual Save"
+        }, 
+        {
+            "attribute_category_id" : 122, 
+            "attribute_category_name" : "Save Game Methods", 
+            "attribute_id" : 2920, 
+            "attribute_name" : "Game Media"
+        }
+    ], 
+    "first_release_date" : "1986-09-26", 
+    "game_id" : 2062, 
+    "patches" : [], 
+    "platform_id" : 22, 
+    "platform_name" : "NES", 
+    "ratings" : [], 
+    "releases" : [
+        {
+            "companies" : [
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Developed by"
+                }, 
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Published by"
+                }
+            ], 
+            "countries" : [
+                "Japan"
+            ], 
+            "description" : "Famicom Disk System", 
+            "product_codes" : [
+                {
+                    "product_code" : "4988602512090", 
+                    "product_code_type" : "EAN-13", 
+                    "product_code_type_id" : 2
+                }, 
+                {
+                    "product_code" : "KDS-AKM", 
+                    "product_code_type" : "Company Code", 
+                    "product_code_type_id" : 10
+                }
+            ], 
+            "release_date" : "1986-09-26"
+        }, 
+        {
+            "companies" : [
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Developed by"
+                }, 
+                {
+                    "company_id" : 4353, 
+                    "company_name" : "Konami, Inc.", 
+                    "role" : "Published by"
+                }
+            ], 
+            "countries" : [
+                "United States"
+            ], 
+            "description" : null, 
+            "product_codes" : [
+                {
+                    "product_code" : "083717110040", 
+                    "product_code_type" : "UPC-A", 
+                    "product_code_type_id" : 1
+                }, 
+                {
+                    "product_code" : "NES-CV-USA", 
+                    "product_code_type" : "Nintendo Media PN", 
+                    "product_code_type_id" : 6
+                }
+            ], 
+            "release_date" : "1987-05"
+        }, 
+        {
+            "companies" : [
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Developed by"
+                }, 
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Published by"
+                }
+            ], 
+            "countries" : [
+                "United Kingdom"
+            ], 
+            "description" : null, 
+            "product_codes" : [], 
+            "release_date" : "1988"
+        }, 
+        {
+            "companies" : [
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Co., Ltd.", 
+                    "role" : "Published by"
+                }, 
+                {
+                    "company_id" : 99, 
+                    "company_name" : "Konami Industry Co. Ltd.", 
+                    "role" : "Developed by"
+                }
+            ], 
+            "countries" : [
+                "Japan"
+            ], 
+            "description" : "Cartridge release", 
+            "product_codes" : [
+                {
+                    "product_code" : "4988602592986", 
+                    "product_code_type" : "EAN-13", 
+                    "product_code_type_id" : 2
+                }, 
+                {
+                    "product_code" : "RV003", 
+                    "product_code_type" : "Company Code", 
+                    "product_code_type_id" : 10
+                }
+            ], 
+            "release_date" : "1993-02-05"
+        }
+    ]
+}

@@ -40,6 +40,9 @@ def mocked_mobygames(url, url_log=None):
     if 'covers' in url:
         mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_covers.json"
                         
+    if re.search('/games/(\d*)\/platforms', url):
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_by_platform.json"
+        
     if re.search('/games/(\d*)\?', url):
         mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania.json"
         
