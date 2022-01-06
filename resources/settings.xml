@@ -15,7 +15,7 @@
                 </setting>
                 <setting id="scraper_cache_dir" type="path" label="30102" help="">
                     <level>1</level>
-                    <default></default>
+                    <default>special://profile/addon_data/script.akl.mobygames/cache</default>
                     <constraints>
                         <writable>true</writable>
                         <allowempty>true</allowempty>

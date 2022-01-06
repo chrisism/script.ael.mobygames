@@ -596,12 +596,22 @@ class MobyGames(Scraper):
             if http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
                 # 360 per hour limit, wait at least 16 minutes
                 wait_till_time = datetime.now() + timedelta(seconds=960)
-                if kodi.dialog_OK('You\'ve exceeded the max rate limit of 360 requests/hour.',
-                                'Respect the website and wait at least till {}.'.format(wait_till_time)):
+                msg = [
+                    'You\'ve exceeded the max rate limit of 360 requests/hour.'
+                     f'Respect the website and wait at least till {wait_till_time}.'
+                     'Want to stop scraping now?'
+                ]
+                auto_timer_ms = (datetime.now() - wait_till_time).total_seconds() * 1000
+                if not kodi.dialog_yesno_timer('\n'.join(msg), timer=auto_timer_ms):
                     # waited long enough? Try again
                     if (datetime.now() - wait_till_time).total_seconds() > 1:
                         retry_after_wait = retry + 1
                         return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
+                else:
+                    self.scraper_disabled = True
+                    status_dic['status'] = False
+                    status_dic['dialog'] = kodi.KODI_MESSAGE_CANCEL
+                    return None
                 
             self._handle_error(status_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
