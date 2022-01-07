@@ -599,14 +599,15 @@ class MobyGames(Scraper):
                 msg = [
                     'You\'ve exceeded the max rate limit of 360 requests/hour.'
                      f'Respect the website and wait at least till {wait_till_time}.'
-                     'Want to stop scraping now?'
+                     'Want to stop scraping now instead?'
                 ]
                 auto_timer_ms = (datetime.now() - wait_till_time).total_seconds() * 1000
                 if not kodi.dialog_yesno_timer('\n'.join(msg), timer_ms=auto_timer_ms):
+                    amount_seconds = (datetime.now() - wait_till_time).total_seconds()
+                    self._wait_for_API_request(amount_seconds*1000)
                     # waited long enough? Try again
-                    if (datetime.now() - wait_till_time).total_seconds() > 1:
-                        retry_after_wait = retry + 1
-                        return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
+                    retry_after_wait = retry + 1
+                    return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
                 else:
                     self.scraper_disabled = True
                     status_dic['status'] = False
