@@ -602,7 +602,7 @@ class MobyGames(Scraper):
                      'Want to stop scraping now?'
                 ]
                 auto_timer_ms = (datetime.now() - wait_till_time).total_seconds() * 1000
-                if not kodi.dialog_yesno_timer('\n'.join(msg), timer=auto_timer_ms):
+                if not kodi.dialog_yesno_timer('\n'.join(msg), timer_ms=auto_timer_ms):
                     # waited long enough? Try again
                     if (datetime.now() - wait_till_time).total_seconds() > 1:
                         retry_after_wait = retry + 1
