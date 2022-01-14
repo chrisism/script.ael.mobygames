@@ -395,7 +395,7 @@ class MobyGames(Scraper):
         if nplayers_str.isnumeric():
             return nplayers_str
 
-        match = re.search('\d+\\-(\d+)', nplayers_str)
+        match = re.search(r'\d+\\-(\d+)', nplayers_str)
         nplayers_str = match.group(1)
         return nplayers_str
 
@@ -555,8 +555,8 @@ class MobyGames(Scraper):
     # Clean URLs for safe logging.
     def _clean_URL_for_log(self, url):
         clean_url = url
-        clean_url = re.sub('api_key=[^&]*&', 'api_key=***&', clean_url)
-        clean_url = re.sub('api_key=[^&]*$', 'api_key=***', clean_url)
+        clean_url = re.sub(r'api_key=[^&]*&', 'api_key=***&', clean_url)
+        clean_url = re.sub(r'api_key=[^&]*$', 'api_key=***', clean_url)
         # log_variable('url', url)
         # log_variable('clean_url', clean_url)
 

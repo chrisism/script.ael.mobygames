@@ -71,7 +71,7 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         if not os.path.exists(cls.TEST_OUTPUT_DIR):
             os.makedirs(cls.TEST_OUTPUT_DIR)
     
-    #@unittest.skip('You must have an API key to use this resource')
+    @unittest.skip('You must have an API key to use this resource')
     @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
     def test_mobygames_metadata(self, settings_mock):     
         # --- main ---------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ class Test_mobygames_metadata_and_assets(unittest.TestCase):
         print(metadata)
         scraper_obj.flush_disk_cache()
 
-    #@unittest.skip('You must have an API key to use this resource')
+    @unittest.skip('You must have an API key to use this resource')
     @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
     def test_mobygames_assets(self, settings_mock):                 
         # --- main ---------------------------------------------------------------------------------------

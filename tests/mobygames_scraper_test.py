@@ -6,10 +6,10 @@ import json
 import re
 import logging
 
-from fakes import FakeProgressDialog, random_string
+from tests.fakes import FakeProgressDialog, FakeFile, random_string
 
-logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
-                datefmt = '%m/%d/%Y %I:%M:%S %p', level = logging.DEBUG)
+#logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
+#                datefmt = '%m/%d/%Y %I:%M:%S %p', level = logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 from resources.lib.scraper import MobyGames
@@ -28,51 +28,39 @@ def read_file_as_json(path):
     return json.loads(file_data, encoding = 'utf-8')
 
 def mocked_mobygames(url, url_log=None):
-
-    mocked_json_file = ''
+    TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+    TEST_ASSETS_DIR = os.path.abspath(os.path.join(TEST_DIR,'assets/'))
 
     if 'format=brief&title=' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_list.json"
+        mocked_json_file = TEST_ASSETS_DIR + "/mobygames_castlevania_list.json"
+        return read_file(mocked_json_file), 200
 
     if 'screenshots' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_screenshots.json"
+        mocked_json_file = TEST_ASSETS_DIR + "/mobygames_castlevania_screenshots.json"
+        return read_file(mocked_json_file), 200
 
     if 'covers' in url:
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_covers.json"
+        mocked_json_file = TEST_ASSETS_DIR + "/mobygames_castlevania_covers.json"
+        return read_file(mocked_json_file), 200
                         
-    if re.search('/games/(\d*)\/platforms', url):
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania_by_platform.json"
+    if re.search(r'/games/(\d*)\/platforms', url):
+        mocked_json_file = TEST_ASSETS_DIR + "/mobygames_castlevania_by_platform.json"
+        return read_file(mocked_json_file), 200
         
-    if re.search('/games/(\d*)\?', url):
-        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "/mobygames_castlevania.json"
+    if re.search(r'/games/(\d*)\?', url):
+        mocked_json_file = TEST_ASSETS_DIR + "/mobygames_castlevania.json"
+        return read_file(mocked_json_file), 200
         
-    if mocked_json_file == '':
-        return net.get_URL(url)
-
-    print('reading mocked data from file: {}'.format(mocked_json_file))
-    return read_file(mocked_json_file), 200
+    return net.get_URL(url)
 
 class Test_mobygames_scraper(unittest.TestCase):
     
-    ROOT_DIR = ''
-    TEST_DIR = ''
-    TEST_ASSETS_DIR = ''
-
-    @classmethod
-    def setUpClass(cls):        
-        cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-        cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
-        cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
-                
-        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
-        print('TEST DIR: {}'.format(cls.TEST_DIR))
-        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
-        print('---------------------------------------------------------------------------')
-
+    @patch('akl.scrapers.kodi.getAddonDir', autospec=True, return_value=FakeFile('/'))
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     @patch('akl.api.client_get_rom')
-    def test_scraping_metadata_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get):    
+    def test_scraping_metadata_for_game(self, 
+        api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get, addon_dir):    
         """
         First test. Test metadata scraping.
         """
@@ -87,7 +75,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom_id = random_string(5)
         rom = ROMObj({
             'id': rom_id,
-            'scanned_data': { 'file':Test_mobygames_scraper.TEST_ASSETS_DIR + '\\castlevania.zip'},
+            'scanned_data': { 'file':'fakedir/roms/castlevania.zip'},
             'platform': 'Nintendo NES'
         })
         api_rom_mock.return_value = rom
@@ -103,12 +91,15 @@ class Test_mobygames_scraper(unittest.TestCase):
         print(actual.get_data_dic())
                 
     # add actual mobygames apikey above and comment out patch attributes to do live tests
+    @patch('akl.scrapers.kodi.getAddonDir', autospec=True, return_value=FakeFile('/'))
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
-    @patch('resources.lib.scraper.net.download_img')
+    @patch('resources.lib.scraper.net.download_img', autospec=True)
     @patch('resources.lib.scraper.io.FileName.scanFilesInPath', autospec=True)
     @patch('resources.lib.scraper.settings.getSetting', autospec=True)
     @patch('akl.api.client_get_rom')
-    def test_scraping_assets_for_game(self, api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, mock_imgs, mock_get):
+    def test_scraping_assets_for_game(self, 
+        api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, 
+        mock_imgs, mock_get, addon_dir):
         # arrange
         settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
         
@@ -120,7 +111,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         rom_id = random_string(5)
         rom = ROMObj({
             'id': rom_id,
-            'scanned_data': { 'file': Test_mobygames_scraper.TEST_ASSETS_DIR + '/castlevania.zip'},
+            'scanned_data': { 'file': '/fakedir/roms/castlevania.zip'},
             'platform': 'Nintendo NES',
             'assets': {key: '' for key in constants.ROM_ASSET_ID_LIST},
             'asset_paths': {
