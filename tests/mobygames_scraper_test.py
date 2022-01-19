@@ -53,11 +53,15 @@ def mocked_mobygames(url, url_log=None):
         
     return net.get_URL(url)
 
+def get_setting(key:str):
+    if key == 'scraper_cache_dir': return FakeFile('/cache')
+    return ''
+
 class Test_mobygames_scraper(unittest.TestCase):
     
     @patch('akl.scrapers.kodi.getAddonDir', autospec=True, return_value=FakeFile('/'))
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
     @patch('akl.api.client_get_rom')
     def test_scraping_metadata_for_game(self, 
         api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get, addon_dir):    
@@ -95,7 +99,7 @@ class Test_mobygames_scraper(unittest.TestCase):
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.net.download_img', autospec=True)
     @patch('resources.lib.scraper.io.FileName.scanFilesInPath', autospec=True)
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True)
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
     @patch('akl.api.client_get_rom')
     def test_scraping_assets_for_game(self, 
         api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, 
