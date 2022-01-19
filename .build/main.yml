@@ -51,14 +51,14 @@ stages:
         displayName: 'Executing gitversion'
 
       - script: |
-            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.LegacySemVer)
-            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(GitVersion.PreReleaseLabelWithDash).$(GitVersion.BuildMetaData)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel).$(GitVersion.BuildMetaData)
         displayName: 'Setting version variables'
         condition: not(eq(${{variables.isMaster}}, true))
         
       - script: |
             echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
-            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
         displayName: 'Setting version variables'
         condition: eq(${{variables.isMaster}}, true)
 
@@ -67,7 +67,7 @@ stages:
         inputs:
           PathToFile: 'addon.xml'
           RegEx: 'version="\d+\.\d+\.\d+.*" provider'
-          ValueToReplace: 'version="$(packageVersion)" provider'
+          ValueToReplace: 'version="$(addonVersion)" provider'
 
       - task: UsePythonVersion@0
         displayName: 'Use Python 3.x'
@@ -114,7 +114,7 @@ stages:
           rootFolderOrFile: '$(build.artifactstagingdirectory)/$(addonName)'
           includeRootFolder: true
           archiveType: 'zip'
-          archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(packageVersion).zip'
+          archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(addonVersion).zip'
           replaceExistingArchive: true
  
       - task: CopyFiles@2
@@ -129,7 +129,7 @@ stages:
           flattenFolders: false
           OverWrite: true
 
-      - script: md5sum $(addonName)-$(packageVersion).zip > $(addonName)-$(packageVersion).zip.md5
+      - script: md5sum $(addonName)-$(addonVersion).zip > $(addonName)-$(addonVersion).zip.md5
         workingDirectory: $(build.artifactstagingdirectory)/package/
         displayName: 'Creating md5 file for zipfile'
 
