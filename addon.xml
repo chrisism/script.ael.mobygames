@@ -10,7 +10,7 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">Mobygames scraper for AKL plugin.</summary>
     <description lang="en_GB">
-    This module can be used as a scraper plugin for AKL. It can scan and launch games from the
+    This module can be used as a scraper plugin for AKL. It can scan metadata and assets from the
     Mobygames database.
     </description>
     <platform>all</platform>
