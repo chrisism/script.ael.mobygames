@@ -1,1 +1,1 @@
-Initial release of AKL plugin
+Initial release of the MobyGames AKL plugin

@@ -34,4 +34,4 @@ branches:
     mode: ContinuousDeployment
 
 merge-message-formats:
-  devops: '(M|m)erge (?<SourceBranch>.+) (in)?to (?<TargetBranch>.+)'
+  devops: '^(M|m)erge (?pull request #(?<PullRequestNumber>\d+)\w)?(?<SourceBranch>.+) (in)?to (?<TargetBranch>.+)'
