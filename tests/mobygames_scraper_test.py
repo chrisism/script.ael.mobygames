@@ -53,25 +53,19 @@ def mocked_mobygames(url, url_log=None):
         
     return net.get_URL(url)
 
-def get_setting(key:str):
-    if key == 'scraper_cache_dir': return FakeFile('/cache')
-    return ''
-
 class Test_mobygames_scraper(unittest.TestCase):
-    
-    @patch('akl.scrapers.kodi.getAddonDir', autospec=True, return_value=FakeFile('/'))
+
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
+    @patch('akl.scrapers.settings.getSettingAsFilePath', autospec=True, return_value=FakeFile("/test"))
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, return_value=random_string(12))
     @patch('akl.api.client_get_rom')
     def test_scraping_metadata_for_game(self, 
-        api_rom_mock: MagicMock, settings_mock:MagicMock, mock_get, addon_dir):    
+        api_rom_mock: MagicMock, settings_mock, settings_file_mock, mock_get):    
         """
         First test. Test metadata scraping.
         """
         print('BEGIN Test_mobygames_scraper::test_scraping_metadata_for_game()')    
         # arrange
-        settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
-        
         settings = ScraperSettings()
         settings.scrape_metadata_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
         settings.scrape_assets_policy = constants.SCRAPE_ACTION_NONE
@@ -95,18 +89,15 @@ class Test_mobygames_scraper(unittest.TestCase):
         print(actual.get_data_dic())
                 
     # add actual mobygames apikey above and comment out patch attributes to do live tests
-    @patch('akl.scrapers.kodi.getAddonDir', autospec=True, return_value=FakeFile('/'))
     @patch('resources.lib.scraper.net.get_URL', side_effect = mocked_mobygames)
     @patch('resources.lib.scraper.net.download_img', autospec=True)
     @patch('resources.lib.scraper.io.FileName.scanFilesInPath', autospec=True)
-    @patch('resources.lib.scraper.settings.getSetting', autospec=True, side_effect=get_setting)
+    @patch('resources.lib.scraper.settings.getSettingAsFilePath', autospec=True, return_value=FakeFile("/test"))
+    @patch('resources.lib.scraper.settings.getSetting', autospec=True, return_value=random_string(12))
     @patch('akl.api.client_get_rom')
     def test_scraping_assets_for_game(self, 
-        api_rom_mock: MagicMock, settings_mock:MagicMock, scan_mock, 
-        mock_imgs, mock_get, addon_dir):
+        api_rom_mock: MagicMock, settings_mock, settings_file_mock, scan_mock, mock_imgs, mock_get):
         # arrange
-        settings_mock.side_effect = lambda key: random_string(12) if key == 'scraper_mobygames_apikey' else ''
-        
         settings = ScraperSettings()
         settings.scrape_metadata_policy = constants.SCRAPE_ACTION_NONE
         settings.scrape_assets_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY

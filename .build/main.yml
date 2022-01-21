@@ -51,14 +51,12 @@ stages:
         displayName: 'Executing gitversion'
 
       - script: |
-            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(GitVersion.PreReleaseLabelWithDash).$(GitVersion.BuildMetaData)
-            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel).$(GitVersion.BuildMetaData)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel)$(GitVersion.PreReleaseNumber)'
         displayName: 'Setting version variables'
         condition: not(eq(${{variables.isMaster}}, true))
         
       - script: |
-            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
-            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
         displayName: 'Setting version variables'
         condition: eq(${{variables.isMaster}}, true)
 
@@ -86,7 +84,7 @@ stages:
         displayName: 'Add changelog in addon.xml'
         workingDirectory: '$(workingDirectory)'
 
-      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml' 
+      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml' 
         workingDirectory: '$(workingDirectory)'
         displayName: 'Run tests'
 
@@ -147,8 +145,8 @@ stages:
       - task: PublishTestResults@2
         displayName: 'Publish test result'
         inputs:
-          testResultsFiles: '$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml'
-          testRunTitle: $(addonName)_$(packageVersion)
+          testResultsFiles: '$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml'
+          testRunTitle: $(addonName)_$(addonVersion)
         condition: succeededOrFailed()
 
       - task: GithubRelease@1 
@@ -160,7 +158,7 @@ stages:
           action: 'create'
           target: '$(Build.SourceVersion)'
           tagSource: 'userSpecifiedTag'
-          tag: $(packageVersion)
+          tag: $(addonVersion)
           title: $(Build.BuildNumber)
           releaseNotesSource: filePath
           releaseNotesFilePath: $(workingDirectory)/changelog.md  
