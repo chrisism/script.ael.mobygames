@@ -21,6 +21,7 @@
 trigger:
 - main
 - release/*
+- hotfix/*
 - dev
 
 pool:
@@ -40,23 +41,27 @@ stages:
   jobs:
     - job: build
       displayName: build
+      workspace:
+        clean: all 
         
       steps:
       - task: gitversion/setup@0
         displayName: 'Install GitTools'
         inputs:
-          versionSpec: '5.3.x'
+          versionSpec: '5.x'
 
       - task: gitversion/execute@0
         displayName: 'Executing gitversion'
 
       - script: |
-            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel)$(GitVersion.PreReleaseNumber)'
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel)$(GitVersion.PreReleaseNumber)
+            echo '##vso[task.setvariable variable=tagVersion]$(GitVersion.LegacySemVer)
         displayName: 'Setting version variables'
         condition: not(eq(${{variables.isMaster}}, true))
         
       - script: |
-            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=tagVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
         displayName: 'Setting version variables'
         condition: eq(${{variables.isMaster}}, true)
 
@@ -158,7 +163,7 @@ stages:
           action: 'create'
           target: '$(Build.SourceVersion)'
           tagSource: 'userSpecifiedTag'
-          tag: $(addonVersion)
+          tag: $(tagVersion)
           title: $(Build.BuildNumber)
           releaseNotesSource: filePath
           releaseNotesFilePath: $(workingDirectory)/changelog.md  
