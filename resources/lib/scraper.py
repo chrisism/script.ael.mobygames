@@ -83,9 +83,13 @@ class MobyGames(Scraper):
     URL_games           = 'https://api.mobygames.com/v1/games'
     URL_platforms       = 'https://api.mobygames.com/v1/platforms'
     URL_game_platform   = 'https://api.mobygames.com/v1/games/{}/platforms/{}'
-    
+
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self):
+        self.regex_num_of_player = re.compile(r'\d+\-(\d+)')
+        self.regex_clean_url_a = re.compile(r'api_key=[^&]*&')
+        self.regex_clean_url_b = re.compile(r'api_key=[^&]*$')
+
         # --- This scraper settings ---
         self.api_key = settings.getSetting('scraper_mobygames_apikey')
         # --- Misc stuff ---
@@ -395,7 +399,9 @@ class MobyGames(Scraper):
         if nplayers_str.isnumeric():
             return nplayers_str
 
-        match = re.search(r'\d+\\-(\d+)', nplayers_str)
+        match = self.regex_num_of_player.search(nplayers_str)
+        if match is None:
+            return constants.DEFAULT_META_NPLAYERS
         nplayers_str = match.group(1)
         return nplayers_str
 
@@ -555,8 +561,8 @@ class MobyGames(Scraper):
     # Clean URLs for safe logging.
     def _clean_URL_for_log(self, url):
         clean_url = url
-        clean_url = re.sub(r'api_key=[^&]*&', 'api_key=***&', clean_url)
-        clean_url = re.sub(r'api_key=[^&]*$', 'api_key=***', clean_url)
+        clean_url = self.regex_clean_url_a.sub('api_key=***&', clean_url)
+        clean_url = self.regex_clean_url_b.sub('api_key=***', clean_url)
         # log_variable('url', url)
         # log_variable('clean_url', clean_url)
 
