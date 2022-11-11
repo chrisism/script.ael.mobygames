@@ -1,0 +1,433 @@
+{
+	"attributes": [{
+		"attribute_category_id": 6,
+		"attribute_category_name": "Input Devices Supported",
+		"attribute_id": 2371,
+		"attribute_name": "Gamepad"
+	}, {
+		"attribute_category_id": 9,
+		"attribute_category_name": "Miscellaneous Attributes",
+		"attribute_id": 2003,
+		"attribute_name": "One-time activation"
+	}, {
+		"attribute_category_id": 10,
+		"attribute_category_name": "Minimum OS Class Required",
+		"attribute_id": 1231,
+		"attribute_name": "Windows XP SP3"
+	}, {
+		"attribute_category_id": 11,
+		"attribute_category_name": "Minimum CPU Class Required",
+		"attribute_id": 217,
+		"attribute_name": "Intel Pentium 4"
+	}, {
+		"attribute_category_id": 12,
+		"attribute_category_name": "Multiplayer Options",
+		"attribute_id": 85,
+		"attribute_name": "LAN"
+	}, {
+		"attribute_category_id": 12,
+		"attribute_category_name": "Multiplayer Options",
+		"attribute_id": 123,
+		"attribute_name": "Internet"
+	}, {
+		"attribute_category_id": 12,
+		"attribute_category_name": "Multiplayer Options",
+		"attribute_id": 156,
+		"attribute_name": "Same/Split-Screen"
+	}, {
+		"attribute_category_id": 15,
+		"attribute_category_name": "Minimum RAM Required",
+		"attribute_id": 1147,
+		"attribute_name": "2 GB"
+	}, {
+		"attribute_category_id": 16,
+		"attribute_category_name": "Business Model",
+		"attribute_id": 124,
+		"attribute_name": "Commercial"
+	}, {
+		"attribute_category_id": 21,
+		"attribute_category_name": "Media Type",
+		"attribute_id": 519,
+		"attribute_name": "DVD-ROM"
+	}, {
+		"attribute_category_id": 21,
+		"attribute_category_name": "Media Type",
+		"attribute_id": 524,
+		"attribute_name": "Download"
+	}, {
+		"attribute_category_id": 27,
+		"attribute_category_name": "Sound Capabilities",
+		"attribute_id": 274,
+		"attribute_name": "Dolby Digital"
+	}, {
+		"attribute_category_id": 38,
+		"attribute_category_name": "Number of Online Players",
+		"attribute_id": 482,
+		"attribute_name": "4 Players"
+	}, {
+		"attribute_category_id": 40,
+		"attribute_category_name": "Number of Offline Players",
+		"attribute_id": 490,
+		"attribute_name": "1-2 Players"
+	}, {
+		"attribute_category_id": 52,
+		"attribute_category_name": "Multiplayer Game Modes",
+		"attribute_id": 619,
+		"attribute_name": "Co-Op"
+	}, {
+		"attribute_category_id": 62,
+		"attribute_category_name": "Minimum DirectX Version Required",
+		"attribute_id": 515,
+		"attribute_name": "DirectX 9.0c"
+	}, {
+		"attribute_category_id": 69,
+		"attribute_category_name": "Supported Systems/Models",
+		"attribute_id": 2273,
+		"attribute_name": "x86 (32-bit)"
+	}, {
+		"attribute_category_id": 76,
+		"attribute_category_name": "Minimum Video Memory Required",
+		"attribute_id": 1288,
+		"attribute_name": "256 MB"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 2079,
+		"attribute_name": "Achievements"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 2081,
+		"attribute_name": "Cloud"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 2085,
+		"attribute_name": "Trading cards"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 3143,
+		"attribute_name": "Remote Play on Phone"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 3144,
+		"attribute_name": "Remote Play on Tablet"
+	}, {
+		"attribute_category_id": 104,
+		"attribute_category_name": "Steam",
+		"attribute_id": 3145,
+		"attribute_name": "Remote Play on TV"
+	}],
+	"first_release_date": "2012-09-18",
+	"game_id": 57909,
+	"patches": [],
+	"platform_id": 3,
+	"platform_name": "Windows",
+	"ratings": [{
+		"rating_id": 93,
+		"rating_name": "Mature",
+		"rating_system_id": 13,
+		"rating_system_name": "ESRB Rating"
+	}, {
+		"rating_id": 426,
+		"rating_name": "18",
+		"rating_system_id": 31,
+		"rating_system_name": "PEGI Rating"
+	}, {
+		"rating_id": 436,
+		"rating_name": "18 (keine Jugendfreigabe)",
+		"rating_system_id": 33,
+		"rating_system_name": "USK Rating"
+	}, {
+		"rating_id": 443,
+		"rating_name": "18",
+		"rating_system_id": 34,
+		"rating_system_name": "BBFC Rating"
+	}, {
+		"rating_id": 724,
+		"rating_name": "MA 15+",
+		"rating_system_id": 30,
+		"rating_system_name": "OFLC (Australia) Rating"
+	}],
+	"releases": [{
+		"companies": [{
+			"company_id": 126,
+			"company_name": "Valve Corporation",
+			"role": "Distributed by"
+		}, {
+			"company_id": 154,
+			"company_name": "Epic Games, Inc.",
+			"role": "Game Engine by"
+		}, {
+			"company_id": 2049,
+			"company_name": "Gearbox Software LLC",
+			"role": "Developed by"
+		}, {
+			"company_id": 4569,
+			"company_name": "RAD Game Tools, Inc.",
+			"role": "Middleware by"
+		}, {
+			"company_id": 6405,
+			"company_name": "2K Games, Inc.",
+			"role": "Published by"
+		}, {
+			"company_id": 7526,
+			"company_name": "Liquid Development, LLC",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 7982,
+			"company_name": "Virtuos Ltd.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 9583,
+			"company_name": "Shadows in Darkness, Inc.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 12194,
+			"company_name": "OkraTron 5000, Inc.",
+			"role": "Voice Recording by"
+		}, {
+			"company_id": 13974,
+			"company_name": "Audiokinetic Inc.",
+			"role": "Sound Engine by"
+		}, {
+			"company_id": 15064,
+			"company_name": "2K China",
+			"role": "Testing by"
+		}, {
+			"company_id": 15825,
+			"company_name": "Pole Position Production",
+			"role": "Additional Sound by"
+		}, {
+			"company_id": 19121,
+			"company_name": "3Point Studios",
+			"role": "Additional Graphics by"
+		}],
+		"countries": ["Canada", "United States"],
+		"description": "Steam release",
+		"product_codes": [],
+		"release_date": "2012-09-18"
+	}, {
+		"companies": [{
+			"company_id": 154,
+			"company_name": "Epic Games, Inc.",
+			"role": "Game Engine by"
+		}, {
+			"company_id": 2049,
+			"company_name": "Gearbox Software LLC",
+			"role": "Developed by"
+		}, {
+			"company_id": 4569,
+			"company_name": "RAD Game Tools, Inc.",
+			"role": "Middleware by"
+		}, {
+			"company_id": 6405,
+			"company_name": "2K Games, Inc.",
+			"role": "Published by"
+		}, {
+			"company_id": 7526,
+			"company_name": "Liquid Development, LLC",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 7982,
+			"company_name": "Virtuos Ltd.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 9583,
+			"company_name": "Shadows in Darkness, Inc.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 11546,
+			"company_name": "Gamesload",
+			"role": "Distributed by"
+		}, {
+			"company_id": 12194,
+			"company_name": "OkraTron 5000, Inc.",
+			"role": "Voice Recording by"
+		}, {
+			"company_id": 13974,
+			"company_name": "Audiokinetic Inc.",
+			"role": "Sound Engine by"
+		}, {
+			"company_id": 15064,
+			"company_name": "2K China",
+			"role": "Testing by"
+		}, {
+			"company_id": 15825,
+			"company_name": "Pole Position Production",
+			"role": "Additional Sound by"
+		}, {
+			"company_id": 19121,
+			"company_name": "3Point Studios",
+			"role": "Additional Graphics by"
+		}],
+		"countries": ["Worldwide"],
+		"description": "Gamesload release",
+		"product_codes": [],
+		"release_date": "2012-09-21"
+	}, {
+		"companies": [{
+			"company_id": 154,
+			"company_name": "Epic Games, Inc.",
+			"role": "Game Engine by"
+		}, {
+			"company_id": 2049,
+			"company_name": "Gearbox Software LLC",
+			"role": "Developed by"
+		}, {
+			"company_id": 4569,
+			"company_name": "RAD Game Tools, Inc.",
+			"role": "Middleware by"
+		}, {
+			"company_id": 6405,
+			"company_name": "2K Games, Inc.",
+			"role": "Published by"
+		}, {
+			"company_id": 7526,
+			"company_name": "Liquid Development, LLC",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 9583,
+			"company_name": "Shadows in Darkness, Inc.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 12194,
+			"company_name": "OkraTron 5000, Inc.",
+			"role": "Voice Recording by"
+		}, {
+			"company_id": 13974,
+			"company_name": "Audiokinetic Inc.",
+			"role": "Sound Engine by"
+		}, {
+			"company_id": 15064,
+			"company_name": "2K China",
+			"role": "Testing by"
+		}, {
+			"company_id": 15825,
+			"company_name": "Pole Position Production",
+			"role": "Additional Sound by"
+		}, {
+			"company_id": 19121,
+			"company_name": "3Point Studios",
+			"role": "Additional Graphics by"
+		}],
+		"countries": ["Germany"],
+		"description": null,
+		"product_codes": [{
+			"product_code": "4012160451581",
+			"product_code_type": "EAN-13",
+			"product_code_type_id": 2
+		}],
+		"release_date": "2012-09-21"
+	}, {
+		"companies": [{
+			"company_id": 154,
+			"company_name": "Epic Games, Inc.",
+			"role": "Game Engine by"
+		}, {
+			"company_id": 2049,
+			"company_name": "Gearbox Software LLC",
+			"role": "Developed by"
+		}, {
+			"company_id": 4569,
+			"company_name": "RAD Game Tools, Inc.",
+			"role": "Middleware by"
+		}, {
+			"company_id": 5837,
+			"company_name": "ak tronic Software & Services GmbH",
+			"role": "Published by"
+		}, {
+			"company_id": 7526,
+			"company_name": "Liquid Development, LLC",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 7982,
+			"company_name": "Virtuos Ltd.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 9583,
+			"company_name": "Shadows in Darkness, Inc.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 12194,
+			"company_name": "OkraTron 5000, Inc.",
+			"role": "Voice Recording by"
+		}, {
+			"company_id": 13974,
+			"company_name": "Audiokinetic Inc.",
+			"role": "Sound Engine by"
+		}, {
+			"company_id": 15064,
+			"company_name": "2K China",
+			"role": "Testing by"
+		}, {
+			"company_id": 15825,
+			"company_name": "Pole Position Production",
+			"role": "Additional Sound by"
+		}, {
+			"company_id": 19121,
+			"company_name": "3Point Studios",
+			"role": "Additional Graphics by"
+		}],
+		"countries": ["Germany"],
+		"description": "Software Pyramide release",
+		"product_codes": [],
+		"release_date": "2014-06"
+	}, {
+		"companies": [{
+			"company_id": 154,
+			"company_name": "Epic Games, Inc.",
+			"role": "Game Engine by"
+		}, {
+			"company_id": 2049,
+			"company_name": "Gearbox Software LLC",
+			"role": "Developed by"
+		}, {
+			"company_id": 4569,
+			"company_name": "RAD Game Tools, Inc.",
+			"role": "Middleware by"
+		}, {
+			"company_id": 5837,
+			"company_name": "ak tronic Software & Services GmbH",
+			"role": "Published by"
+		}, {
+			"company_id": 7526,
+			"company_name": "Liquid Development, LLC",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 7982,
+			"company_name": "Virtuos Ltd.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 9583,
+			"company_name": "Shadows in Darkness, Inc.",
+			"role": "Additional Graphics by"
+		}, {
+			"company_id": 12194,
+			"company_name": "OkraTron 5000, Inc.",
+			"role": "Voice Recording by"
+		}, {
+			"company_id": 13974,
+			"company_name": "Audiokinetic Inc.",
+			"role": "Sound Engine by"
+		}, {
+			"company_id": 15064,
+			"company_name": "2K China",
+			"role": "Testing by"
+		}, {
+			"company_id": 15825,
+			"company_name": "Pole Position Production",
+			"role": "Additional Sound by"
+		}, {
+			"company_id": 19121,
+			"company_name": "3Point Studios",
+			"role": "Additional Graphics by"
+		}],
+		"countries": ["Germany"],
+		"description": "Green Pepper release",
+		"product_codes": [],
+		"release_date": "2016-01-15"
+	}]
+}

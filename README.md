@@ -5,7 +5,6 @@ Mobygames scraper for AKL. This plugin can be used to scrape metadata and assets
 | Release | Status |
 |----|----|
 | Stable |[![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/script.akl.mobygames?branchName=main)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=9&branchName=main) |
-| Beta | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/script.akl.mobygames?branchName=release/1.1.0)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=9&branchName=release/1.1.0) |
 | Unstable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/script.akl.mobygames?branchName=dev)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=9&branchName=dev) |
 
 ### Kodi forum thread ###

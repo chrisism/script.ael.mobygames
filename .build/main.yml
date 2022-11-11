@@ -85,7 +85,7 @@ stages:
           pip install -r requirements.txt
         displayName: pip install 
 
-      - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.txt
+      - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.md
         displayName: 'Add changelog in addon.xml'
         workingDirectory: '$(workingDirectory)'
 
@@ -170,7 +170,7 @@ stages:
           addChangeLog: true
           assets: |
             $(build.artifactstagingdirectory)/package/*.*
-            $(workingDirectory)/changelog.txt
+            $(workingDirectory)/README.md
 
 - stage: DeployStaging
   displayName: Deployment on Staging
