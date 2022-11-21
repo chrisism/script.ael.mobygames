@@ -68,7 +68,7 @@ class MobyGames(Scraper):
         'front cover': constants.ASSET_BOXFRONT_ID,
         'back cover': constants.ASSET_BOXBACK_ID,
         'media': constants.ASSET_CARTRIDGE_ID,
-        'manual': None,
+        'manual': constants.ASSET_MANUAL_ID,
         'spine/sides': None,
         'other': None,
         'advertisement': None,
@@ -533,7 +533,7 @@ class MobyGames(Scraper):
         return asset_list
 
     def _retrieve_snap_assets(self, candidate, platform_id, status_dic):
-        self.logger.debug('MobyGames._retrieve_snap_assets() Getting Snaps...')
+        self.logger.debug('Getting Snaps...')
         url_tail = '/{}/platforms/{}/screenshots?api_key={}'.format(candidate['id'], platform_id, self.api_key)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
@@ -560,13 +560,13 @@ class MobyGames(Scraper):
             if self.verbose_flag:
                 self.logger.debug('Found Snap {}'.format(asset_data['url_thumb']))
             asset_list.append(asset_data)
-        self.logger.debug('MobyGames._retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
+        self.logger.debug('Found {} snap assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
 
         return asset_list
 
     def _retrieve_cover_assets(self, candidate, platform_id, status_dic):
-        self.logger.debug('MobyGames._retrieve_cover_assets() Getting Covers...')
+        self.logger.debug('Getting Covers...')
         url_tail = '/{}/platforms/{}/covers?api_key={}'.format(candidate['id'], platform_id, self.api_key)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
