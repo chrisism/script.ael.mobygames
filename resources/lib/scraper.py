@@ -6,6 +6,7 @@
 # https://github.com/muldjord/skyscraper
 # https://github.com/muldjord/skyscraper/blob/master/docs/SCRAPINGMODULES.md
 
+# Copyright (c) 2020 Chrisism <crizizz@gmail.com>
 # Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -35,7 +36,6 @@ from akl.utils import io, net, kodi, text
 from akl.scrapers import Scraper
 from akl.api import ROMObj
 
-logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------------------------------------
 # MobyGames online scraper.
@@ -65,27 +65,29 @@ class MobyGames(Scraper):
         constants.ASSET_CARTRIDGE_ID,
     ]
     asset_name_mapping = {
-        'front cover'   : constants.ASSET_BOXFRONT_ID,
-        'back cover'    : constants.ASSET_BOXBACK_ID,
-        'media'         : constants.ASSET_CARTRIDGE_ID,
-        'manual'        : None,
-        'spine/sides'   : None,
-        'other'         : None,
-        'advertisement' : None,
-        'extras'        : None,
-        'inside cover'  : None,
-        'full cover'    : None,
-        'soundtrack'    : None,
-        'map'           : constants.ASSET_MAP_ID
+        'front cover': constants.ASSET_BOXFRONT_ID,
+        'back cover': constants.ASSET_BOXBACK_ID,
+        'media': constants.ASSET_CARTRIDGE_ID,
+        'manual': constants.ASSET_MANUAL_ID,
+        'spine/sides': None,
+        'other': None,
+        'advertisement': None,
+        'extras': None,
+        'inside cover': None,
+        'full cover': None,
+        'soundtrack': None,
+        'map': constants.ASSET_MAP_ID
     }
     
     # This allows to change the API version easily.
-    URL_games           = 'https://api.mobygames.com/v1/games'
-    URL_platforms       = 'https://api.mobygames.com/v1/platforms'
-    URL_game_platform   = 'https://api.mobygames.com/v1/games/{}/platforms/{}'
+    URL_games = 'https://api.mobygames.com/v1/games'
+    URL_platforms = 'https://api.mobygames.com/v1/platforms'
+    URL_game_platform = 'https://api.mobygames.com/v1/games/{}/platforms/{}'
 
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        
         self.regex_num_of_player = re.compile(r'\d+\-(\d+)')
         self.regex_clean_url_a = re.compile(r'api_key=[^&]*&')
         self.regex_clean_url_b = re.compile(r'api_key=[^&]*$')
@@ -102,32 +104,38 @@ class MobyGames(Scraper):
         super(MobyGames, self).__init__(cache_dir)
 
     # --- Base class abstract methods ------------------------------------------------------------
-    def get_name(self): return 'MobyGames'
+    def get_name(self):
+        return 'MobyGames'
 
-    def get_filename(self): return 'MobyGames'
+    def get_filename(self):
+        return 'MobyGames'
 
-    def supports_disk_cache(self): return True
+    def supports_disk_cache(self):
+        return True
 
-    def supports_search_string(self): return True
+    def supports_search_string(self):
+        return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in MobyGames.supported_metadata_list else False
 
-    def supports_metadata(self): return True
+    def supports_metadata(self):
+        return True
 
     def supports_asset_ID(self, asset_ID):
         return True if asset_ID in MobyGames.supported_asset_list else False
 
-    def supports_assets(self): return True
+    def supports_assets(self):
+        return True
 
     # If the MobyGames API key is not configured in the settings then disable the scraper
     # and print an error.
     def check_before_scraping(self, status_dic):
         if self.api_key:
-            logger.debug('MobyGames.check_before_scraping() MobiGames API key looks OK.')
+            self.logger.debug('MobyGames.check_before_scraping() MobiGames API key looks OK.')
             return
-        logger.error('MobyGames.check_before_scraping() MobiGames API key not configured.')
-        logger.error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
+        self.logger.error('MobyGames.check_before_scraping() MobiGames API key not configured.')
+        self.logger.error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
         self.scraper_disabled = True
         status_dic['status'] = False
         status_dic['dialog'] = kodi.KODI_MESSAGE_DIALOG
@@ -137,23 +145,24 @@ class MobyGames(Scraper):
             'and introduce the API key in AKL addon settings.'
         )
 
-    def get_candidates(self, search_term:str, rom:ROMObj, platform, status_dic) -> typing.List[dict]:
+    def get_candidates(self, search_term: str, rom: ROMObj, platform, status_dic) -> typing.List[dict]:
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
-            logger.debug('MobyGames.get_candidates() Scraper disabled. Returning empty data.')
+            self.logger.debug('MobyGames.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
         # Prepare data for scraping.
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = convert_AKL_platform_to_MobyGames(platform)
-        logger.debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
-        logger.debug('MobyGames.get_candidates() rom identifier     "{}"'.format(rom.get_identifier()))
-        logger.debug('MobyGames.get_candidates() AKL platform       "{}"'.format(platform))
-        logger.debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
+        self.logger.debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
+        self.logger.debug('MobyGames.get_candidates() rom identifier     "{}"'.format(rom.get_identifier()))
+        self.logger.debug('MobyGames.get_candidates() AKL platform       "{}"'.format(platform))
+        self.logger.debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, platform, scraper_platform, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
 
         return candidate_list
 
@@ -162,20 +171,21 @@ class MobyGames(Scraper):
     def get_metadata(self, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            logger.debug('MobyGames.get_metadata() Scraper disabled. Returning empty data.')
+            self.logger.debug('MobyGames.get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
         # --- Check if search term is in the cache ---
         if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
-            logger.debug('MobyGames.get_metadata() Metadata cache hit "{}"'.format(self.cache_key))
+            self.logger.debug('MobyGames.get_metadata() Metadata cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        logger.debug('MobyGames.get_metadata() Metadata cache miss "{}"'.format(self.cache_key))
+        self.logger.debug('MobyGames.get_metadata() Metadata cache miss "{}"'.format(self.cache_key))
         url_tail = '/{}?api_key={}'.format(self.candidate['id'], self.api_key)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_get_metadata.json', json_data)
 
         # --- Get extra platform specific data ---
@@ -184,24 +194,26 @@ class MobyGames(Scraper):
             self.candidate['id'], self.candidate['scraper_platform']) + url_tail
 
         extra_json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_get_metadata_by_platform.json', extra_json_data)
 
         # --- Parse game page data ---
         gamedata = self._new_gamedata_dic()
-        gamedata['title']           = self._parse_metadata_title(json_data)
-        gamedata['year']            = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
-        gamedata['genre']           = self._parse_metadata_genre(json_data)
-        gamedata['plot']            = self._parse_metadata_plot(json_data)
-        gamedata['rating']          = self._parse_metadata_rating(json_data)
-        gamedata['developer']       = self._parse_metadata_developer(extra_json_data)
-        gamedata['esrb']            = self._parse_metadata_esrb(extra_json_data)
-        gamedata['nplayers']        = self._parse_metadata_nplayers(extra_json_data)
+        gamedata['title'] = self._parse_metadata_title(json_data)
+        gamedata['year'] = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
+        gamedata['genre'] = self._parse_metadata_genre(json_data)
+        gamedata['plot'] = self._parse_metadata_plot(json_data)
+        gamedata['rating'] = self._parse_metadata_rating(json_data)
+        gamedata['developer'] = self._parse_metadata_developer(extra_json_data)
+        gamedata['esrb'] = self._parse_metadata_esrb(extra_json_data)
+        gamedata['pegi'] = self._parse_metadata_pegi(extra_json_data)
+        gamedata['nplayers'] = self._parse_metadata_nplayers(extra_json_data)
         gamedata['nplayers_online'] = self._parse_metadata_nplayers_online(extra_json_data)
-        gamedata['tags']            = self._parse_metadata_tags(extra_json_data)
+        gamedata['tags'] = self._parse_metadata_tags(extra_json_data)
 
         # --- Put metadata in the cache ---
-        logger.debug('MobyGames.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
+        self.logger.debug('MobyGames.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_METADATA, self.cache_key, gamedata)
 
         return gamedata
@@ -211,22 +223,23 @@ class MobyGames(Scraper):
     #
     # In the MobyGames scraper is convenient to grab all the available assets for a candidate,
     # cache the assets, and then select the assets of a specific type from the cached list.
-    def get_assets(self, asset_info_id:str, status_dic):
+    def get_assets(self, asset_info_id: str, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            logger.debug('MobyGames.get_assets() Scraper disabled. Returning empty data.')
+            self.logger.debug('MobyGames.get_assets() Scraper disabled. Returning empty data.')
             return []
 
-        logger.debug('MobyGames.get_assets() Getting assets (ID {}) for candidate ID "{}"'.format(
+        self.logger.debug('MobyGames.get_assets() Getting assets (ID {}) for candidate ID "{}"'.format(
             asset_info_id, self.candidate['id']))
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # Get all assets for candidate. _retrieve_all_assets() caches all assets for a candidate.
         # Then select asset of a particular type.
         all_asset_list = self._retrieve_all_assets(self.candidate, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_info_id]
-        logger.debug('MobyGames::get_assets() Total assets {0} / Returned assets {1}'.format(
+        self.logger.debug('MobyGames::get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
@@ -236,7 +249,8 @@ class MobyGames(Scraper):
     def resolve_asset_URL(self, selected_asset, status_dic):
         # Transform http to https
         url = selected_asset['url']
-        if url[0:4] == 'http': url = 'https' + url[4:]
+        if url[0:4] == 'http':
+            url = 'https' + url[4:]
         url_log = self._clean_URL_for_log(url)
 
         return url, url_log
@@ -251,18 +265,19 @@ class MobyGames(Scraper):
         
         # failed? retry after 5 seconds
         if not image_local_path.exists():
-            logger.debug('Download failed. Retry after 5 seconds')
+            self.logger.debug('Download failed. Retry after 5 seconds')
             self._wait_for_API_request(5000)
             net.download_img(image_url, image_local_path)
         return image_local_path
         
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
-        logger.debug('MobyGames.debug_get_platforms() BEGIN...')
+        self.logger.debug('MobyGames.debug_get_platforms() BEGIN...')
         url_tail = '?api_key={}'.format(self.api_key)
         url = MobyGames.URL_platforms + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_get_platforms.json', json_data)
 
         return json_data
@@ -280,7 +295,8 @@ class MobyGames(Scraper):
                 self.api_key, search_string_encoded, scraper_platform)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_get_candidates.json', json_data)
 
         # --- Parse game list ---
@@ -288,33 +304,35 @@ class MobyGames(Scraper):
         candidate_list = []
         for item in games_json:
             title = item['title']
-            scraped_akl_platform = convert_MobyGames_platform_to_AKL_platform(scraper_platform) #item['platform'])
+            scraped_akl_platform = convert_MobyGames_platform_to_AKL_platform(scraper_platform)
 
             candidate = self._new_candidate_dic()
             candidate['id'] = item['game_id']
-            candidate['display_name'] = '{} ({})'.format(title, scraped_akl_platform.long_name)
+            candidate['display_name'] = f'{title} ({scraped_akl_platform.long_name})'
             candidate['platform'] = platform
             candidate['scraper_platform'] = scraper_platform
             candidate['order'] = 1
 
             # Increase search score based on our own search.
-            if title.lower() == search_term.lower():          candidate['order'] += 2
-            if title.lower().find(search_term.lower()) != -1: candidate['order'] += 1
+            if title.lower() == search_term.lower():
+                candidate['order'] += 2
+            if title.lower().find(search_term.lower()) != -1:
+                candidate['order'] += 1
             candidate_list.append(candidate)
 
         # --- Sort game list based on the score. High scored candidates go first ---
-        candidate_list.sort(key = lambda result: result['order'], reverse = True)
+        candidate_list.sort(key=lambda result: result['order'], reverse=True)
 
         return candidate_list
 
     def _parse_metadata_title(self, json_data):
         title_str = json_data['title'] if 'title' in json_data else constants.DEFAULT_META_TITLE
-
         return title_str
 
     def _parse_metadata_year(self, json_data, scraper_platform):
         platform_data = json_data['platforms']
-        if len(platform_data) == 0: return constants.DEFAULT_META_YEAR
+        if len(platform_data) == 0:
+            return constants.DEFAULT_META_YEAR
         for platform in platform_data:
             if platform['platform_id'] == int(scraper_platform):
                 return platform['first_release_date'][0:4]
@@ -325,7 +343,8 @@ class MobyGames(Scraper):
     def _parse_metadata_genre(self, json_data):
         if 'genres' in json_data:
             genre_names = []
-            for genre in json_data['genres']: genre_names.append(genre['genre_name'])
+            for genre in json_data['genres']: 
+                genre_names.append(genre['genre_name'])
             genre_str = ', '.join(genre_names)
         else:
             genre_str = constants.DEFAULT_META_GENRE
@@ -335,7 +354,8 @@ class MobyGames(Scraper):
     def _parse_metadata_plot(self, json_data):
         if 'description' in json_data and json_data['description'] is not None:
             plot_str = json_data['description']
-            plot_str = text.remove_HTML_tags(plot_str) # Clean HTML tags like <i>, </i>
+            # Clean HTML tags like <i>, </i>
+            plot_str = text.remove_HTML_tags(plot_str)
         else:
             plot_str = constants.DEFAULT_META_PLOT
 
@@ -347,29 +367,40 @@ class MobyGames(Scraper):
             return rating
         return None
 
-    def _parse_metadata_developer(self, json_data:dict) -> str:
-        if not 'releases' in json_data: return None
-        if len(json_data['releases']) == 0: return None
-        if not 'companies' in json_data['releases'][0]: return None
+    def _parse_metadata_developer(self, json_data: dict) -> str:
+        if 'releases' not in json_data:
+            return None
+        if len(json_data['releases']) == 0:
+            return None
+        if 'companies' not in json_data['releases'][0]:
+            return None
 
         for company in json_data['releases'][0]['companies']:
             if company['role'] == 'Developed by':
                 return company['company_name']
         return None
 
-    def _parse_metadata_esrb(self, json_data:dict) -> str:
+    def _parse_metadata_esrb(self, json_data: dict) -> str:
         if 'ratings' not in json_data or json_data['ratings'] is None:
             return constants.DEFAULT_META_ESRB
             
         for rating in json_data['ratings']:
             if rating['rating_system_name'] == 'ESRB Rating':
                 return rating['rating_name']
-
         return constants.DEFAULT_META_ESRB
 
-    def _parse_metadata_nplayers(self, json_data:dict) -> str:
+    def _parse_metadata_pegi(self, json_data: dict) -> str:
+        if 'ratings' not in json_data or json_data['ratings'] is None:
+            return ''
+            
+        for rating in json_data['ratings']:
+            if rating['rating_system_name'] == 'PEGI Rating':
+                return rating['rating_name']
+        return ''
+    
+    def _parse_metadata_nplayers(self, json_data: dict) -> str:
         if 'attributes' in json_data:
-            attributes:list = json_data['attributes']
+            attributes: list = json_data['attributes']
             for attribute in attributes:
                 if attribute['attribute_category_id'] == 40:
                     return self._parse_nplayers(attribute)
@@ -377,9 +408,9 @@ class MobyGames(Scraper):
         nplayers_str = constants.DEFAULT_META_NPLAYERS
         return nplayers_str
 
-    def _parse_metadata_nplayers_online(self, json_data:dict) -> str:
+    def _parse_metadata_nplayers_online(self, json_data: dict) -> str:
         if 'attributes' in json_data:
-            attributes:list = json_data['attributes']
+            attributes: list = json_data['attributes']
             for attribute in attributes:
                 if attribute['attribute_category_id'] == 38:
                     return self._parse_nplayers(attribute)
@@ -387,8 +418,8 @@ class MobyGames(Scraper):
         nplayers_str = constants.DEFAULT_META_NPLAYERS
         return nplayers_str
 
-    def _parse_nplayers(self, attribute:dict) -> str:
-        if not 'attribute_name' in attribute or not attribute['attribute_name']:
+    def _parse_nplayers(self, attribute: dict) -> str:
+        if 'attribute_name' not in attribute or not attribute['attribute_name']:
             nplayers_str = constants.DEFAULT_META_NPLAYERS
             return nplayers_str
                     
@@ -405,64 +436,74 @@ class MobyGames(Scraper):
         nplayers_str = match.group(1)
         return nplayers_str
 
-    def _parse_metadata_tags(self, json_data:dict) -> list:
+    def _parse_metadata_tags(self, json_data: dict) -> list:
         tags = []
-        if not 'attributes' in json_data:
+        if 'attributes' not in json_data:
             return tags
 
-        attributes:list = json_data['attributes']
+        attributes: list = json_data['attributes']
         for attribute in attributes:
             tag = None
-            if attribute['attribute_category_id'] == 2: # Video Modes Supported
+            if attribute['attribute_category_id'] == 2:
+                # Video Modes Supported
                 tag = self._parse_tag_videomodes(attribute)
-            if attribute['attribute_category_id'] == 6: # Input Devices Supported
+            if attribute['attribute_category_id'] == 6:
+                # Input Devices Supported
                 tag = self._parse_tag_input_devices(attribute)
-            if attribute['attribute_category_id'] == 45: # Video Resolutions Supported
+            if attribute['attribute_category_id'] == 45:
+                # Video Resolutions Supported
                 tag = self._parse_tag_videoresolution(attribute)
-            if attribute['attribute_category_id'] == 27: # Sound Capabilities
+            if attribute['attribute_category_id'] == 27:
+                # Sound Capabilities
                 tag = self._parse_tag_sound(attribute)
-            if attribute['attribute_category_id'] == 52: # Multiplayer Game Modes
+            if attribute['attribute_category_id'] == 52:
+                # Multiplayer Game Modes
                 tag = self._parse_tag_mp_modes(attribute)
-            if attribute['attribute_category_id'] == 65: # Controller Types Supported
+            if attribute['attribute_category_id'] == 65:
+                # Controller Types Supported
                 tag = self._parse_tag_controllers(attribute)
 
-            if tag is not None: tags.append(tag)
+            if tag is not None:
+                tags.append(tag)
         return tags
 
-    def _parse_tag_videomodes(self, attribute:dict) -> str:
+    def _parse_tag_videomodes(self, attribute: dict) -> str:
         videomode = str(attribute['attribute_name'])
-        if videomode == 'Full screen': return None
-        if videomode == 'Window': return None
+        if videomode == 'Full screen':
+            return None
+        if videomode == 'Window':
+            return None
 
         videomode = videomode.replace('HDTV ', '')
         videomode = videomode.replace('Progressive Scan', '')
         videomode = videomode.replace('\u00d7', 'x')
         return videomode
 
-    def _parse_tag_videoresolution(self, attribute:dict) -> str:
+    def _parse_tag_videoresolution(self, attribute: dict) -> str:
         resolution = str(attribute['attribute_name'])
         resolution = resolution.replace('\u00d7', 'x')
         return resolution
 
-    def _parse_tag_sound(self, attribute:dict) -> str:
+    def _parse_tag_sound(self, attribute: dict) -> str:
         sound = str(attribute['attribute_name'])
         return sound.lower()
 
-    def _parse_tag_controllers(self, attribute:dict) -> str:
+    def _parse_tag_controllers(self, attribute: dict) -> str:
         controller_type = str(attribute['attribute_name'])
         if controller_type == 'Digital Joystick':
             return 'controller'
         return None
 
-    def _parse_tag_mp_modes(self, attribute:dict) -> str:
+    def _parse_tag_mp_modes(self, attribute: dict) -> str:
         mode = str(attribute['attribute_name'])
         if mode == 'Free-for-all / One-on-one (VS)':
             return 'free-for-all'
         return mode.lower()
 
-    def _parse_tag_input_devices(self, attribute:dict) -> str:
+    def _parse_tag_input_devices(self, attribute: dict) -> str:
         device = str(attribute['attribute_name'])
-        if device == 'Other Input Devices': return None
+        if device == 'Other Input Devices': 
+            return None
         return device.lower()
 
     # Get ALL available assets for game.
@@ -470,37 +511,40 @@ class MobyGames(Scraper):
     def _retrieve_all_assets(self, candidate, status_dic):
         # --- Cache hit ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            logger.debug('MobyGames._retrieve_all_assets() Internal cache hit "{}"'.format(self.cache_key))
+            self.logger.debug('MobyGames._retrieve_all_assets() Internal cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        logger.debug('MobyGames._retrieve_all_assets() Internal cache miss "{}"'.format(self.cache_key))
+        self.logger.debug('MobyGames._retrieve_all_assets() Internal cache miss "{}"'.format(self.cache_key))
         snap_assets = self._retrieve_snap_assets(candidate, candidate['scraper_platform'], status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         cover_assets = self._retrieve_cover_assets(candidate, candidate['scraper_platform'], status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         asset_list = snap_assets + cover_assets
-        logger.debug('MobyGames._retrieve_all_assets() Total {} assets found for candidate ID {}'.format(
+        self.logger.debug('MobyGames._retrieve_all_assets() Total {} assets found for candidate ID {}'.format(
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        logger.debug('MobyGames._retrieve_all_assets() Adding to internal cache "{}"'.format(self.cache_key))
+        self.logger.debug('MobyGames._retrieve_all_assets() Adding to internal cache "{}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
 
     def _retrieve_snap_assets(self, candidate, platform_id, status_dic):
-        logger.debug('MobyGames._retrieve_snap_assets() Getting Snaps...')
+        self.logger.debug('Getting Snaps...')
         url_tail = '/{}/platforms/{}/screenshots?api_key={}'.format(candidate['id'], platform_id, self.api_key)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_assets_snap.json', json_data)
 
         # --- Parse images page data ---
         asset_list = []
         for image_data in json_data['screenshots']:
-            # logger.debug('Snap caption "{0}"'.format(image_data['caption']))
+            # self.logger.debug('Snap caption "{0}"'.format(image_data['caption']))
             asset_data = self._new_assetdata_dic()
             # In MobyGames typically the Title snaps have the word "Title" in the caption.
             # Search for it
@@ -513,19 +557,21 @@ class MobyGames(Scraper):
             asset_data['url_thumb'] = image_data['thumbnail_image']
             # URL is not mandatory here but MobyGames provides it anyway.
             asset_data['url'] = image_data['image']
-            if self.verbose_flag: logger.debug('Found Snap {}'.format(asset_data['url_thumb']))
+            if self.verbose_flag:
+                self.logger.debug('Found Snap {}'.format(asset_data['url_thumb']))
             asset_list.append(asset_data)
-        logger.debug('MobyGames._retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
+        self.logger.debug('Found {} snap assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
 
         return asset_list
 
     def _retrieve_cover_assets(self, candidate, platform_id, status_dic):
-        logger.debug('MobyGames._retrieve_cover_assets() Getting Covers...')
+        self.logger.debug('Getting Covers...')
         url_tail = '/{}/platforms/{}/covers?api_key={}'.format(candidate['id'], platform_id, self.api_key)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not status_dic['status']:
+            return None
         self._dump_json_debug('MobyGames_assets_cover.json', json_data)
 
         if json_data is None:
@@ -541,7 +587,7 @@ class MobyGames(Scraper):
                 if image_data['scan_of'].lower() in MobyGames.asset_name_mapping:
                     asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
                 else:
-                    logger.warning('Scan type "{}" not implemented yet.'.format(image_data['scan_of']))
+                    self.logger.warning('Scan type "{}" not implemented yet.'.format(image_data['scan_of']))
 
                 # url_thumb is mandatory.
                 # url is not mandatory here but MobyGames provides it anyway.
@@ -550,9 +596,10 @@ class MobyGames(Scraper):
                 asset_data['display_name'] = asset_name
                 asset_data['url_thumb'] = image_data['thumbnail_image']
                 asset_data['url'] = image_data['image']
-                if self.verbose_flag: logger.debug('Found Cover {0}'.format(asset_data['url_thumb']))
+                if self.verbose_flag:
+                    self.logger.debug('Found Cover {0}'.format(asset_data['url_thumb']))
                 asset_list.append(asset_data)
-        logger.debug('MobyGames._retrieve_cover_assets() Found {} cover assets for candidate #{}'.format(
+        self.logger.debug('MobyGames._retrieve_cover_assets() Found {} cover assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
 
         return asset_list
@@ -595,22 +642,22 @@ class MobyGames(Scraper):
                 # log_variable('page_data_raw', page_data_raw)
                 json_data = json.loads(page_data_raw)
                 error_msg = json_data['message']
-            except:
+            except Exception:
                 error_msg = 'Unknown/unspecified error.'
-            logger.error('MobyGames msg "{}"'.format(error_msg))
+            self.logger.error(f'MobyGames msg "{error_msg}"')
             
             if http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
                 # 360 per hour limit, wait at least 16 minutes
                 wait_till_time = datetime.now() + timedelta(seconds=960)
                 msg = [
                     'You\'ve exceeded the max rate limit of 360 requests/hour.'
-                     f'Respect the website and wait at least till {wait_till_time}.'
-                     'Want to stop scraping now instead?'
+                    f'Respect the website and wait at least till {wait_till_time}.'
+                    'Want to stop scraping now instead?'
                 ]
-                auto_timer_ms = (datetime.now() - wait_till_time).total_seconds() * 1000
+                auto_timer_ms = int((datetime.now() - wait_till_time).total_seconds()) * 1000
                 if not kodi.dialog_yesno_timer('\n'.join(msg), timer_ms=auto_timer_ms):
                     amount_seconds = (datetime.now() - wait_till_time).total_seconds()
-                    self._wait_for_API_request(amount_seconds*1000)
+                    self._wait_for_API_request(amount_seconds * 1000)
                     # waited long enough? Try again
                     retry_after_wait = retry + 1
                     return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
@@ -620,7 +667,7 @@ class MobyGames(Scraper):
                     status_dic['dialog'] = kodi.KODI_MESSAGE_CANCEL
                     return None
                 
-            self._handle_error(status_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
+            self._handle_error(status_dic, f'HTTP code {http_code} message "{error_msg}"')
             return None
 
         # If page_data_raw is None at this point is because of an exception in net_get_URL()
@@ -638,10 +685,13 @@ class MobyGames(Scraper):
 
         return json_data
 
+
 # ------------------------------------------------------------------------------------------------
 # TheGamesDB supported platforms mapped to AKL platforms.
 # ------------------------------------------------------------------------------------------------
 DEFAULT_PLAT_MOBYGAMES = 0
+
+
 # * MobyGames API cannot be used withouth a valid platform.
 # * If '0' is used as the Unknown platform then MobyGames returns an HTTP error
 #    "HTTP Error 422: UNPROCESSABLE ENTITY"
@@ -660,6 +710,7 @@ def convert_AKL_platform_to_MobyGames(platform_long_name) -> int:
     # Platform not found.
     return DEFAULT_PLAT_MOBYGAMES
 
+
 def convert_MobyGames_platform_to_AKL_platform(moby_platform) -> platforms.Platform:
     if moby_platform in MobyGames_AKL_compact_platform_mapping:
         platform_compact_name = MobyGames_AKL_compact_platform_mapping[moby_platform]
@@ -667,29 +718,30 @@ def convert_MobyGames_platform_to_AKL_platform(moby_platform) -> platforms.Platf
         
     return platforms.get_AKL_platform_by_compact(platforms.PLATFORM_UNKNOWN_COMPACT)
 
+
 AKL_compact_platform_MobyGames_mapping = {
     '3do': 35,
-    'cpc': 60, 
+    'cpc': 60,
     'a2600': 28,
     'a5200': 33,
     'a7800': 34,
-    'atari-8bit': 39, 
-    'jaguar': 17, 
+    'atari-8bit': 39,
+    'jaguar': 17,
     'jaguarcd': 17,
     'lynx': 18,
     'atari-st': 24,
     'wswan': 48,
     'wswancolor': 49,
     'loopy': 124,
-    'pv1000': 125, 
+    'pv1000': 125,
     'cvision': 29,
     'c16': 115,
     'c64': 27,
-    'amiga': 19, 
-    'cd32': 56, 
+    'amiga': 19,
+    'cd32': 56,
     'cdtv': 83,
     'vic20': 43,
-    'arcadia2001': 162, 
+    'arcadia2001': 162,
     'avision': 210,
     'channelf': 76,
     'fmtmarty': 102,
@@ -703,7 +755,7 @@ AKL_compact_platform_MobyGames_mapping = {
     'msx': 57,
     'msx2': 57,
     'windows': 3,
-    'xbox': 13, 
+    'xbox': 13,
     'xbox360': 69,
     'xboxone': 142,
     'pce': 40,
@@ -711,21 +763,21 @@ AKL_compact_platform_MobyGames_mapping = {
     'pcfx': 59,
     'sgx': 127,
     'n3ds': 101,
-    'n64': 9, 
+    'n64': 9,
     'n64dd': 9,
     'nds': 44,
     'ndsi': 87,
     'fds': 22,
     'gb': 10,
     'gba': 12,
-    'gbcolor': 11, 
+    'gbcolor': 11,
     'gamecube': 14,
-    'nes': 22, 
+    'nes': 22,
     'pokemini': 152,
-    'snes': 15, 
+    'snes': 15,
     'switch': 203,
     'vb': 38,
-    'wii': 82,  
+    'wii': 82,
     'wiiu': 132,
     'ouya': 144,
     'g7400': 128,
@@ -738,7 +790,7 @@ AKL_compact_platform_MobyGames_mapping = {
     'megacd': 20,
     'pico': 103,
     'saturn': 23,
-    'sg1000': 114, 
+    'sg1000': 114,
     'x68k': 106,
     'spectrum': 41,
     'zx80': 118,
@@ -751,7 +803,7 @@ AKL_compact_platform_MobyGames_mapping = {
     'ps3': 81,
     'ps4': 141,
     'psp': 46,
-    'psvita': 105, 
+    'psvita': 105,
     'tigergame': 50,
     'creativision': 212,
     'vflash': 189,
