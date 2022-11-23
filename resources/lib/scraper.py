@@ -52,6 +52,7 @@ class MobyGames(Scraper):
         constants.META_PLOT_ID,
         constants.META_DEVELOPER_ID,
         constants.META_ESRB_ID,
+        constants.META_PEGI_ID,
         constants.META_RATING_ID,
         constants.META_NPLAYERS_ID,
         constants.META_NPLAYERS_ONLINE_ID,
@@ -385,8 +386,26 @@ class MobyGames(Scraper):
             return constants.DEFAULT_META_ESRB
             
         for rating in json_data['ratings']:
-            if rating['rating_system_name'] == 'ESRB Rating':
-                return rating['rating_name']
+            if rating['rating_system_name'] != 'ESRB Rating':
+                continue
+            esrb_str = rating['rating_name']
+            if esrb_str in constants.ESRB_LIST:
+                return esrb_str
+            ["Everyone", "Early Childhood", "Kids to Adults", "Teen", "Mature", "Adults Only", "Rating Pending"]
+            if esrb_str.startswith('T'):
+                return constants.ESRB_TEEN
+            if esrb_str.startswith('Early Childhood'):
+                return constants.ESRB_EARLY
+            if esrb_str.startswith('E10'):
+                return constants.ESRB_EVERYONE_10
+            if esrb_str.startswith('M'):
+                return constants.ESRB_MATURE
+            if esrb_str.startswith('AO'):
+                return constants.ESRB_ADULTS_ONLY
+            if esrb_str.startswith('Everyone'):
+                return constants.ESRB_EVERYONE
+            return constants.ESRB_PENDING
+            
         return constants.DEFAULT_META_ESRB
 
     def _parse_metadata_pegi(self, json_data: dict) -> str:
@@ -394,9 +413,13 @@ class MobyGames(Scraper):
             return ''
             
         for rating in json_data['ratings']:
-            if rating['rating_system_name'] == 'PEGI Rating':
-                return rating['rating_name']
-        return ''
+            if rating['rating_system_name'] != 'PEGI Rating':
+                continue
+            pegi_str = rating['rating_name']
+            pegi_str = f'PEGI {pegi_str}'
+            if pegi_str in constants.PEGI_LIST:
+                return pegi_str
+        return constants.DEFAULT_META_PEGI
     
     def _parse_metadata_nplayers(self, json_data: dict) -> str:
         if 'attributes' in json_data:
