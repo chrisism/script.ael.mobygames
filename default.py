@@ -56,7 +56,7 @@ def run_plugin():
     parser.add_argument('--romcollection_id', type=str, help="ROM Collection ID")
     parser.add_argument('--source_id', type=str, help="Source ID")
     parser.add_argument('--entity_id', type=str, help="Entity ID")
-    parser.add_argument('--entity_type', type=str, help="Entity Type (ROM|ROMCOLLECTION|SOURCE)")
+    parser.add_argument('--entity_type', type=int, help="Entity Type (ROM|ROMCOLLECTION|SOURCE)")
     parser.add_argument('--akl_addon_id', type=str, help="Addon configuration ID")
     parser.add_argument('--settings', type=json.loads, help="Specific run setting")
     
