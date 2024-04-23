@@ -67,7 +67,8 @@ def run_plugin():
         kodi.dialog_OK(text=parser.usage)
         return
         
-    if args.type == constants.AddonType.SCRAPER.name and args.cmd == 'scrape': run_scraper(args)
+    if args.type == constants.AddonType.SCRAPER.name and args.cmd == 'scrape':
+        run_scraper(args)
     else:
         kodi.dialog_OK(text=parser.format_help())
         
