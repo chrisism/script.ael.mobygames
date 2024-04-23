@@ -250,7 +250,7 @@ class MobyGames(Scraper):
     def resolve_asset_URL(self, selected_asset, status_dic):
         # Transform http to https
         url = selected_asset['url']
-        if url[0:4] == 'http':
+        if url[0:5] == 'http:':
             url = 'https' + url[4:]
         url_log = self._clean_URL_for_log(url)
 
